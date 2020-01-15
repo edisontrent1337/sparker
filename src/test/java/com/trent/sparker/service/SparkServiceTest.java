@@ -51,7 +51,7 @@ public class SparkServiceTest {
 		assertThatFolderExists("project", "project.ui");
 		assertThatFileExists("project", "project.ui", "pom.xml");
 		assertThatFolderExists("project", "project.api");
-		assertThatFileExists("project", "project.api", "api.yml");
+		assertThatFileExists("project", "project.api", "api_pom.xml");
 		assertThatFileExists("project", "project.api", "pom.xml");
 	}
 
