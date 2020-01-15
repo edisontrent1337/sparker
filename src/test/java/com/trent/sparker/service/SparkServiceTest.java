@@ -1,7 +1,6 @@
 package com.trent.sparker.service;
 
 import com.trent.sparker.SparkerApplication;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,11 +39,20 @@ public class SparkServiceTest {
 
 	@Test
 	public void createProjectWorksCorrectly() {
-		sparkService.create("project");
+		SparkOptions options = new SparkOptions()
+				.setBasePath(testFolderPath)
+				.setProjectName("project")
+				.setGroupId("com.trent.test")
+				.setArtifactId("project");
+		sparkService.create(options);
 		assertThatFolderExists("project");
 		assertThatFolderExists("project", "project.app");
+		assertThatFileExists("project", "project.app", "pom.xml");
 		assertThatFolderExists("project", "project.ui");
+		assertThatFileExists("project", "project.ui", "pom.xml");
 		assertThatFolderExists("project", "project.api");
+		assertThatFileExists("project", "project.api", "api.yml");
+		assertThatFileExists("project", "project.api", "pom.xml");
 	}
 
 	private void assertThatFileExists(String... pathArguments) {
@@ -59,4 +67,4 @@ public class SparkServiceTest {
 	}
 
 
-	}
+}
