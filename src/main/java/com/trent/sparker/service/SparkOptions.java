@@ -11,6 +11,7 @@ public class SparkOptions {
 	private String artifactId;
 	private Path basePath;
 	private String language;
+	private String mainClass;
 
 	public SparkOptions() {
 		this.basePath = Paths.get("").toAbsolutePath();
@@ -41,6 +42,7 @@ public class SparkOptions {
 
 	public SparkOptions setArtifactId(String artifactId) {
 		this.artifactId = artifactId;
+		this.mainClass = artifactId.substring(0, 1).toUpperCase() + artifactId.substring(1) + "Application";
 		return this;
 	}
 
@@ -60,6 +62,10 @@ public class SparkOptions {
 	public SparkOptions setLanguage(String language) {
 		this.language = language;
 		return this;
+	}
+
+	public String getMainClass() {
+		return mainClass;
 	}
 
 }

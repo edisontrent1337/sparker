@@ -1,6 +1,7 @@
 package com.trent.sparker.service.commands;
 
 import com.trent.sparker.service.SparkOptions;
+import com.trent.sparker.utils.DataUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -22,14 +23,15 @@ public class APIModuleCommand extends Command {
 		Path root = Paths.get(basePath.toString(), projectName, projectName + ".api");
 		Files.createDirectories(root);
 		System.out.println("Creating api module... \n");
-		createFile(root, "api_pom.xml");
-		createFile(root, "pom.xml");
+		DataUtils.createFile(root, "pom.xml");
 		readTemplate();
 		super.run();
 	}
 
 	private void readTemplate() throws IOException {
 		InputStream is = getClass().getClassLoader().getResourceAsStream("templates/api_pom.xml");
+
+		// URI uri = getClass().getResource("templates/api_pom.xml").toURI();
 		String rawTemplatePOM = IOUtils.toString(is, StandardCharsets.UTF_8);
 		rawTemplatePOM = rawTemplatePOM
 				.replaceAll("\\{groupId}", sparkOptions.getGroupId())
@@ -37,9 +39,5 @@ public class APIModuleCommand extends Command {
 		System.out.println(rawTemplatePOM);
 	}
 
-	private static void createFile(Path root, String fileName) throws IOException {
-		String destination = root.toString()  + "/" +  fileName;
-		System.out.println(destination);
-		Files.createFile(Paths.get(destination));
-	}
+
 }

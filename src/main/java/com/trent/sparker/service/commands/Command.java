@@ -64,6 +64,11 @@ public class Command {
 		return new APIModuleCommand(root.toString(), "", sparkOptions);
 	}
 
+	public static ParentModuleCommand createParentModuleCommand(SparkOptions sparkOptions) {
+		Path root = getRootFromOptions(sparkOptions);
+		return new ParentModuleCommand(root.toString(), "", sparkOptions);
+	}
+
 	private static Path getRootFromOptions(SparkOptions sparkOptions) {
 		String projectName = sparkOptions.getProjectName();
 		Path basePath = sparkOptions.getBasePath();
