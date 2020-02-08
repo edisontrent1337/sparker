@@ -2,11 +2,10 @@ package com.trent.sparker.service.commands;
 
 import com.trent.sparker.service.SparkOptions;
 import com.trent.sparker.utils.DataUtils;
-import org.apache.commons.io.IOUtils;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -23,21 +22,11 @@ public class APIModuleCommand extends Command {
 		Path root = Paths.get(basePath.toString(), projectName, projectName + ".api");
 		Files.createDirectories(root);
 		System.out.println("Creating api module... \n");
-		DataUtils.createFile(root, "pom.xml");
-		readTemplate();
+		String rawTemplatePOM = DataUtils.populateTemplateFileWithOptions("api_pom", sparkOptions);
 		super.run();
+		BufferedWriter writer = new BufferedWriter(new FileWriter(root.toString() + "/pom.xml"));
+		writer.write(rawTemplatePOM);
+		writer.close();
 	}
-
-	private void readTemplate() throws IOException {
-		InputStream is = getClass().getClassLoader().getResourceAsStream("templates/api_pom.xml");
-
-		// URI uri = getClass().getResource("templates/api_pom.xml").toURI();
-		String rawTemplatePOM = IOUtils.toString(is, StandardCharsets.UTF_8);
-		rawTemplatePOM = rawTemplatePOM
-				.replaceAll("\\{groupId}", sparkOptions.getGroupId())
-				.replaceAll("\\{artifactId}", sparkOptions.getArtifactId());
-		System.out.println(rawTemplatePOM);
-	}
-
 
 }

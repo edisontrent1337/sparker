@@ -12,7 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.xmlunit.builder.Input;
-import org.xmlunit.diff.*;
+import org.xmlunit.diff.DOMDifferenceEngine;
+import org.xmlunit.diff.DifferenceEngine;
 
 import javax.xml.transform.Source;
 import java.io.IOException;
@@ -44,21 +45,10 @@ public class SparkServiceTest {
 
 	@Test
 	public void createProjectWorksCorrectly() {
-		SparkOptions options = new SparkOptions()
-				.setBasePath(testFolderPath)
-				.setProjectName("project")
-				.setGroupId("com.trent.test")
-				.setArtifactId("project");
+		SparkOptions options = createSparkOptions();
 		sparkService.create(options);
 		assertThatFolderExists("project");
-//		assertThatFileExists("project", "pom.xml");
-
-		DifferenceEngine diff = new DOMDifferenceEngine();
-		Source generated = Input.fromFile(Paths.get(testFolderPath.toString(), "pom.xml").toFile()).build();
-		Source control = Input.fromFile("/src/test/resources/comparison/app_pom.xml").build();
-
-		diff.addDifferenceListener((comparison, outcome) -> Assert.fail("found a difference: " + comparison));
-		diff.compare(control, generated);
+		assertThatFileExists("project", "pom.xml");
 
 		assertThatFolderExists("project", "project.app");
 		assertThatFileExists("project", "project.app", "pom.xml");
@@ -66,6 +56,66 @@ public class SparkServiceTest {
 		assertThatFileExists("project", "project.ui", "pom.xml");
 		assertThatFolderExists("project", "project.api");
 		assertThatFileExists("project", "project.api", "pom.xml");
+
+		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project", "main_pom");
+		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project/project.app", "app_pom");
+		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project/project.api", "api_pom");
+		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project/project.ui", "ui_pom");
+
+	}
+
+
+	@Test
+	public void createParentModuleWorksCorrectly() throws IOException {
+		SparkOptions options = createSparkOptions();
+		sparkService.createParentModule(options);
+		assertThatFolderExists("project");
+		assertThatFileExists("project", "pom.xml");
+		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project", "main_pom");
+	}
+
+	@Test
+	public void createAppModuleWorksCorrectly() throws IOException, InterruptedException {
+		SparkOptions options = createSparkOptions();
+		sparkService.createAppModule(options);
+		assertThatFolderExists("project", "project.app");
+		assertThatFileExists("project", "project.app", "pom.xml");
+		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project/project.app", "app_pom");
+	}
+
+	@Test
+	public void createAPIModuleWorksCorrectly() throws IOException, InterruptedException {
+		SparkOptions options = createSparkOptions();
+		sparkService.createAPIModule(options);
+		assertThatFolderExists("project", "project.api");
+		assertThatFileExists("project", "project.api", "pom.xml");
+		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project/project.api", "api_pom");
+	}
+
+	@Test
+	public void createUIModuleWorksCorrectly() throws IOException, InterruptedException {
+		SparkOptions options = createSparkOptions();
+		sparkService.createUIModule(options);
+		assertThatFolderExists("project", "project.ui");
+		assertThatFileExists("project", "project.ui", "pom.xml");
+		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project/project.ui", "ui_pom");
+	}
+
+	private void assertGeneratedPomFileIsValid(String generatedPomLocation, String comparisonFile) {
+		DifferenceEngine diff = new DOMDifferenceEngine();
+
+		Source generated = Input.fromFile(Paths.get(generatedPomLocation, "pom.xml").toFile()).build();
+		Source control = Input.fromFile("src/test/resources/comparison/" + comparisonFile + ".xml").build();
+		diff.addDifferenceListener((comparison, outcome) -> Assert.fail("found a difference: " + comparison));
+		diff.compare(control, generated);
+	}
+
+	private SparkOptions createSparkOptions() {
+		return new SparkOptions()
+				.setBasePath(testFolderPath)
+				.setProjectName("project")
+				.setGroupId("com.trent.test")
+				.setArtifactId("project");
 	}
 
 	private void assertThatFileExists(String... pathArguments) {
@@ -77,26 +127,6 @@ public class SparkServiceTest {
 		Path constructedPath = Paths.get(testFolderPath.toString(), pathArguments);
 		assertTrue("The folder " + constructedPath + " does not exist", constructedPath.toFile().exists());
 		assertTrue("The file " + constructedPath + " is not a folder.", constructedPath.toFile().isDirectory());
-	}
-
-
-	@Test
-	public void createDirectoryCommandWorksCorrectly() throws IOException {
-		SparkOptions options = new SparkOptions()
-				.setBasePath(testFolderPath)
-				.setProjectName("project")
-				.setGroupId("com.trent.test")
-				.setArtifactId("project");
-		sparkService.createProjectStructure(options);
-		assertThatFolderExists("project");
-		assertThatFileExists("project", "pom.xml");
-
-		DifferenceEngine diff = new DOMDifferenceEngine();
-		Source generated = Input.fromFile(Paths.get(testFolderPath.toString(), "project", "pom.xml").toFile()).build();
-		Source control = Input.fromFile("src/test/resources/comparison/main_pom.xml").build();
-
-		diff.addDifferenceListener((comparison, outcome) -> Assert.fail("found a difference: " + comparison));
-		diff.compare(control, generated);
 	}
 
 }

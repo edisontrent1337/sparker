@@ -5,39 +5,20 @@ import com.trent.sparker.service.SparkOptions;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Command {
 
-	private String commandString;
 	SparkOptions sparkOptions;
+	private String commandString;
 	private String executionPath;
 
 	public Command(String executionPath, String commandString, SparkOptions sparkOptions) {
 		this.executionPath = executionPath;
 		this.commandString = commandString;
 		this.sparkOptions = sparkOptions;
-	}
-
-	public void run() throws IOException, InterruptedException {
-		ProcessBuilder processBuilder = new ProcessBuilder();
-		processBuilder.command("bash", "-c", "cd " + this.executionPath + "&& " + commandString);
-		StringBuilder output = new StringBuilder();
-		Process process = processBuilder.start();
-		BufferedReader reader = new BufferedReader(
-				new InputStreamReader(process.getInputStream()));
-
-		String line;
-		while ((line = reader.readLine()) != null) {
-			output.append(line).append("\n");
-		}
-
-		int exitVal = process.waitFor();
-		if (exitVal == 0) {
-			System.out.println("Success!");
-			System.out.println(output);
-		}
 	}
 
 	public static AppModuleCommand createAppModuleCommand(SparkOptions sparkOptions) {
@@ -74,5 +55,29 @@ public class Command {
 		Path basePath = sparkOptions.getBasePath();
 		return Paths.get(basePath.toString(), projectName);
 
+	}
+
+	public void run() throws IOException, InterruptedException {
+		String projectName = sparkOptions.getProjectName();
+		Path basePath = sparkOptions.getBasePath();
+		Path root = Paths.get(basePath.toString(), projectName);
+		Files.createDirectories(root);
+		ProcessBuilder processBuilder = new ProcessBuilder();
+		processBuilder.command("bash", "-c", "cd " + this.executionPath + "&& " + commandString);
+		StringBuilder output = new StringBuilder();
+		Process process = processBuilder.start();
+		BufferedReader reader = new BufferedReader(
+				new InputStreamReader(process.getInputStream()));
+
+		String line;
+		while ((line = reader.readLine()) != null) {
+			output.append(line).append("\n");
+		}
+
+		int exitVal = process.waitFor();
+		if (exitVal == 0) {
+			System.out.println("Success!");
+			System.out.println(output);
+		}
 	}
 }

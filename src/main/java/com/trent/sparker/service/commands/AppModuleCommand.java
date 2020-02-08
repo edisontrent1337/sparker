@@ -24,13 +24,7 @@ public class AppModuleCommand extends Command {
 		Files.createDirectories(root);
 		System.out.println("Creating app module... \n");
 		super.run();
-		String rawTemplatePOM = DataUtils.getTemplateXMLAsString("app_pom");
-		rawTemplatePOM = rawTemplatePOM
-				.replaceAll("\\{projectName}", sparkOptions.getProjectName())
-				.replaceAll("\\{groupId}", sparkOptions.getGroupId())
-				.replaceAll("\\{artifactId}", sparkOptions.getArtifactId())
-				.replaceAll("\\{mainClass}", sparkOptions.getMainClass());
-		System.out.println(rawTemplatePOM);
+		String rawTemplatePOM = DataUtils.populateTemplateFileWithOptions("app_pom", sparkOptions);
 		BufferedWriter writer = new BufferedWriter(new FileWriter(root.toString() + "/" + projectName + ".app/pom.xml"));
 		writer.write(rawTemplatePOM);
 		writer.close();
