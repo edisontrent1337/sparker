@@ -16,10 +16,13 @@ import org.xmlunit.diff.DOMDifferenceEngine;
 import org.xmlunit.diff.DifferenceEngine;
 
 import javax.xml.transform.Source;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
@@ -44,7 +47,7 @@ public class SparkServiceTest {
 	}
 
 	@Test
-	public void createProjectWorksCorrectly() {
+	public void createProjectWorksCorrectly() throws IOException, InterruptedException {
 		SparkOptions options = createSparkOptions();
 		sparkService.create(options);
 		assertThatFolderExists("project");
@@ -62,6 +65,24 @@ public class SparkServiceTest {
 		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project/project.api", "api_pom");
 		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project/project.ui", "ui_pom");
 
+		ProcessBuilder processBuilder = new ProcessBuilder();
+		processBuilder.command("bash", "-c", "cd " + this.testFolderPath + "/" + options.getProjectName() + "&& " + "mvn clean install");
+		StringBuilder output = new StringBuilder();
+		Process process = processBuilder.start();
+		BufferedReader reader = new BufferedReader(
+				new InputStreamReader(process.getInputStream()));
+
+		String line;
+		while ((line = reader.readLine()) != null) {
+			output.append(line).append("\n");
+		}
+
+		int exitVal = process.waitFor();
+		if (exitVal == 0) {
+			System.out.println("Success!");
+		}
+		System.out.println(output);
+		assertEquals(0, exitVal);
 	}
 
 
