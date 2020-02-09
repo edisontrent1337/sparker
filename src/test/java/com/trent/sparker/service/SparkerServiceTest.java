@@ -28,28 +28,28 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SparkerApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-public class SparkServiceTest {
+public class SparkerServiceTest {
 
 	@Autowired
-	private SparkService sparkService;
+	private SparkerService sparkerService;
 
 	@Rule
 	public TemporaryFolder testFolder = new TemporaryFolder();
 	private Path testFolderPath;
 
-	public SparkServiceTest() {
+	public SparkerServiceTest() {
 	}
 
 	@Before
 	public void setUp() {
 		this.testFolderPath = testFolder.getRoot().toPath();
-		sparkService.setBasePath(testFolderPath);
+		sparkerService.setBasePath(testFolderPath);
 	}
 
 	@Test
 	public void createProjectWorksCorrectly() throws IOException, InterruptedException {
-		SparkOptions options = createSparkOptions();
-		sparkService.create(options);
+		SparkerOptions options = createSparkOptions();
+		sparkerService.create(options);
 		assertThatFolderExists("project");
 		assertThatFileExists("project", "pom.xml");
 
@@ -65,31 +65,30 @@ public class SparkServiceTest {
 		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project/project.api", "api_pom");
 		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project/project.ui", "ui_pom");
 
+		System.out.println("Testing build...");
 		ProcessBuilder processBuilder = new ProcessBuilder();
+		processBuilder.redirectErrorStream(true);
 		processBuilder.command("bash", "-c", "cd " + this.testFolderPath + "/" + options.getProjectName() + "&& " + "mvn clean install");
-		StringBuilder output = new StringBuilder();
 		Process process = processBuilder.start();
-		BufferedReader reader = new BufferedReader(
-				new InputStreamReader(process.getInputStream()));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
 		String line;
 		while ((line = reader.readLine()) != null) {
-			output.append(line).append("\n");
+			System.out.println(line);
 		}
 
 		int exitVal = process.waitFor();
 		if (exitVal == 0) {
 			System.out.println("Success!");
 		}
-		System.out.println(output);
 		assertEquals(0, exitVal);
 	}
 
 
 	@Test
 	public void createParentModuleWorksCorrectly() throws IOException {
-		SparkOptions options = createSparkOptions();
-		sparkService.createParentModule(options);
+		SparkerOptions options = createSparkOptions();
+		sparkerService.createParentModule(options);
 		assertThatFolderExists("project");
 		assertThatFileExists("project", "pom.xml");
 		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project", "main_pom");
@@ -97,8 +96,8 @@ public class SparkServiceTest {
 
 	@Test
 	public void createAppModuleWorksCorrectly() throws IOException, InterruptedException {
-		SparkOptions options = createSparkOptions();
-		sparkService.createAppModule(options);
+		SparkerOptions options = createSparkOptions();
+		sparkerService.createAppModule(options);
 		assertThatFolderExists("project", "project.app");
 		assertThatFileExists("project", "project.app", "pom.xml");
 		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project/project.app", "app_pom");
@@ -106,8 +105,8 @@ public class SparkServiceTest {
 
 	@Test
 	public void createAPIModuleWorksCorrectly() throws IOException, InterruptedException {
-		SparkOptions options = createSparkOptions();
-		sparkService.createAPIModule(options);
+		SparkerOptions options = createSparkOptions();
+		sparkerService.createAPIModule(options);
 		assertThatFolderExists("project", "project.api");
 		assertThatFileExists("project", "project.api", "pom.xml");
 		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project/project.api", "api_pom");
@@ -115,8 +114,8 @@ public class SparkServiceTest {
 
 	@Test
 	public void createUIModuleWorksCorrectly() throws IOException, InterruptedException {
-		SparkOptions options = createSparkOptions();
-		sparkService.createUIModule(options);
+		SparkerOptions options = createSparkOptions();
+		sparkerService.createUIModule(options);
 		assertThatFolderExists("project", "project.ui");
 		assertThatFileExists("project", "project.ui", "pom.xml");
 		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project/project.ui", "ui_pom");
@@ -131,8 +130,8 @@ public class SparkServiceTest {
 		diff.compare(control, generated);
 	}
 
-	private SparkOptions createSparkOptions() {
-		return new SparkOptions()
+	private SparkerOptions createSparkOptions() {
+		return new SparkerOptions()
 				.setBasePath(testFolderPath)
 				.setProjectName("project")
 				.setGroupId("com.trent.test")

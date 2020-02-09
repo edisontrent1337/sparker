@@ -1,6 +1,6 @@
 package com.trent.sparker.utils;
 
-import com.trent.sparker.service.SparkOptions;
+import com.trent.sparker.service.SparkerOptions;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
@@ -23,12 +23,12 @@ public class DataUtils {
 		return IOUtils.toString(is, StandardCharsets.UTF_8);
 	}
 
-	public static String populateTemplateFileWithOptions(String templateFile, SparkOptions sparkOptions) throws IOException {
+	public static String populateTemplateFileWithOptions(String templateFile, SparkerOptions sparkerOptions) throws IOException {
 		String rawTemplate = getTemplateXMLAsString(templateFile);
-		String result = rawTemplate.replaceAll("\\{projectName}", sparkOptions.getProjectName())
-				.replaceAll("\\{groupId}", sparkOptions.getGroupId())
-				.replaceAll("\\{artifactId}", sparkOptions.getArtifactId())
-				.replaceAll("\\{mainClass}", sparkOptions.getMainClass());
+		String result = rawTemplate.replaceAll("\\{projectName}", sparkerOptions.getProjectName())
+				.replaceAll("\\{groupId}", sparkerOptions.getGroupId())
+				.replaceAll("\\{artifactId}", sparkerOptions.getArtifactId())
+				.replaceAll("\\{mainClass}", sparkerOptions.getMainClass());
 		return result;
 	}
 

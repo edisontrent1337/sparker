@@ -1,8 +1,7 @@
 package com.trent.sparker.service.commands;
 
-import com.trent.sparker.service.SparkOptions;
+import com.trent.sparker.service.SparkerOptions;
 import com.trent.sparker.utils.DataUtils;
-import org.apache.commons.io.FileUtils;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -16,14 +15,14 @@ import java.nio.file.StandardCopyOption;
 
 public class AppModuleCommand extends Command {
 
-	AppModuleCommand(String executionPath, String commandString, SparkOptions sparkOptions) {
-		super(executionPath, commandString, sparkOptions);
+	AppModuleCommand(String executionPath, String commandString, SparkerOptions sparkerOptions) {
+		super(executionPath, commandString, sparkerOptions);
 	}
 
 	@Override
 	public void run() throws IOException, InterruptedException {
-		String projectName = sparkOptions.getProjectName();
-		Path basePath = sparkOptions.getBasePath();
+		String projectName = sparkerOptions.getProjectName();
+		Path basePath = sparkerOptions.getBasePath();
 		Path root = Paths.get(basePath.toString(), projectName);
 		Files.createDirectories(root);
 
@@ -47,7 +46,7 @@ public class AppModuleCommand extends Command {
 		Files.createDirectories(Paths.get(root.toString(), projectName + ".app", "musl"));
 		Files.copy(muslFile, Paths.get(root.toString(), projectName + ".app", "musl", "ld-musl-x86_64.path"));
 
-		String rawTemplatePOM = DataUtils.populateTemplateFileWithOptions("app_pom", sparkOptions);
+		String rawTemplatePOM = DataUtils.populateTemplateFileWithOptions("app_pom", sparkerOptions);
 		BufferedWriter writer = new BufferedWriter(new FileWriter(root.toString() + "/" + projectName + ".app/pom.xml"));
 		writer.write(rawTemplatePOM);
 		writer.close();

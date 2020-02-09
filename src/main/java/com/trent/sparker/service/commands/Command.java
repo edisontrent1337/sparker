@@ -1,6 +1,6 @@
 package com.trent.sparker.service.commands;
 
-import com.trent.sparker.service.SparkOptions;
+import com.trent.sparker.service.SparkerOptions;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,55 +11,56 @@ import java.nio.file.Paths;
 
 public class Command {
 
-	SparkOptions sparkOptions;
+	SparkerOptions sparkerOptions;
 	private String commandString;
 	private String executionPath;
 
-	public Command(String executionPath, String commandString, SparkOptions sparkOptions) {
+	public Command(String executionPath, String commandString, SparkerOptions sparkerOptions) {
 		this.executionPath = executionPath;
 		this.commandString = commandString;
-		this.sparkOptions = sparkOptions;
+		this.sparkerOptions = sparkerOptions;
 	}
 
-	public static AppModuleCommand createAppModuleCommand(SparkOptions sparkOptions) {
-		String projectName = sparkOptions.getProjectName();
-		String language = sparkOptions.getLanguage();
-		Path root = getRootFromOptions(sparkOptions);
+	public static AppModuleCommand createAppModuleCommand(SparkerOptions sparkerOptions) {
+		String projectName = sparkerOptions.getProjectName();
+		String language = sparkerOptions.getLanguage();
+		Path root = getRootFromOptions(sparkerOptions);
 		return new AppModuleCommand(root.toString(), " curl https://start.spring.io/starter.tgz -d dependencies=web,actuator \\\n" +
 				" -d language=" + language +
 				" -d type=maven-project" +
-				" -d groupId=" + sparkOptions.getGroupId() +
-				" -d artifactId=" + sparkOptions.getArtifactId() +
+				" -d name=" + sparkerOptions.getProjectName() +
+				" -d groupId=" + sparkerOptions.getGroupId() +
+				" -d artifactId=" + sparkerOptions.getArtifactId() +
 				" -d baseDir=" + projectName + ".app" +
-				" | tar -xzvf -", sparkOptions);
+				" | tar -xzvf -", sparkerOptions);
 	}
 
-	public static UIModuleCommand createUIModuleCommand(SparkOptions sparkOptions) {
-		String projectName = sparkOptions.getProjectName();
-		Path root = getRootFromOptions(sparkOptions);
-		return new UIModuleCommand(root.toString(), "npx create-react-app " + projectName + ".ui", sparkOptions);
+	public static UIModuleCommand createUIModuleCommand(SparkerOptions sparkerOptions) {
+		String projectName = sparkerOptions.getProjectName();
+		Path root = getRootFromOptions(sparkerOptions);
+		return new UIModuleCommand(root.toString(), "npx create-react-app " + projectName + ".ui", sparkerOptions);
 	}
 
-	public static APIModuleCommand createAPIModuleCommand(SparkOptions sparkOptions) {
-		Path root = getRootFromOptions(sparkOptions);
-		return new APIModuleCommand(root.toString(), "", sparkOptions);
+	public static APIModuleCommand createAPIModuleCommand(SparkerOptions sparkerOptions) {
+		Path root = getRootFromOptions(sparkerOptions);
+		return new APIModuleCommand(root.toString(), "", sparkerOptions);
 	}
 
-	public static ParentModuleCommand createParentModuleCommand(SparkOptions sparkOptions) {
-		Path root = getRootFromOptions(sparkOptions);
-		return new ParentModuleCommand(root.toString(), "", sparkOptions);
+	public static ParentModuleCommand createParentModuleCommand(SparkerOptions sparkerOptions) {
+		Path root = getRootFromOptions(sparkerOptions);
+		return new ParentModuleCommand(root.toString(), "", sparkerOptions);
 	}
 
-	private static Path getRootFromOptions(SparkOptions sparkOptions) {
-		String projectName = sparkOptions.getProjectName();
-		Path basePath = sparkOptions.getBasePath();
+	private static Path getRootFromOptions(SparkerOptions sparkerOptions) {
+		String projectName = sparkerOptions.getProjectName();
+		Path basePath = sparkerOptions.getBasePath();
 		return Paths.get(basePath.toString(), projectName);
 
 	}
 
 	public void run() throws IOException, InterruptedException {
-		String projectName = sparkOptions.getProjectName();
-		Path basePath = sparkOptions.getBasePath();
+		String projectName = sparkerOptions.getProjectName();
+		Path basePath = sparkerOptions.getBasePath();
 		Path root = Paths.get(basePath.toString(), projectName);
 		Files.createDirectories(root);
 		ProcessBuilder processBuilder = new ProcessBuilder();
