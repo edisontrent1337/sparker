@@ -38,7 +38,6 @@ public class SparkerOptions extends Options {
 				.longOpt(option)
 				.valueSeparator()
 				.hasArg(true)
-				.required()
 				.desc(description).build());
 	}
 

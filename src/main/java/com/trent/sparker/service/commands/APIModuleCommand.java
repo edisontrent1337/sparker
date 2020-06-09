@@ -1,16 +1,15 @@
 package com.trent.sparker.service.commands;
 
-import com.trent.sparker.service.SparkerOptions;
-import com.trent.sparker.utils.DataUtils;
-
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import com.trent.sparker.service.SparkerOptions;
+import com.trent.sparker.utils.DataUtils;
 
 public class APIModuleCommand extends Command {
 	public APIModuleCommand(String executionPath, String commandString, SparkerOptions sparkerOptions) {
@@ -23,12 +22,11 @@ public class APIModuleCommand extends Command {
 		Path basePath = sparkerOptions.getBasePath();
 		Path root = Paths.get(basePath.toString(), projectName, projectName + ".api");
 		Files.createDirectories(root);
-		URL apiFileLocation = getClass().getClassLoader().getResource("templates/template_api.yaml");
-		if (apiFileLocation == null) {
+		InputStream apiFileStream = getClass().getClassLoader().getResourceAsStream("templates/template_api.yaml");
+		if (apiFileStream == null) {
 			throw new IOException("api.yaml file not found.");
 		}
-		Path yamlFile = new File(apiFileLocation.getFile()).toPath();
-		Files.copy(yamlFile, Paths.get(root.toString(), "api.yaml"));
+		Files.copy(apiFileStream, Paths.get(root.toString(), "api.yaml"));
 		System.out.println("Creating api module... \n");
 		String rawTemplatePOM = DataUtils.populateTemplateFileWithOptions("api_pom", sparkerOptions);
 		super.run();

@@ -1,17 +1,18 @@
 package com.trent.sparker.service.commands;
 
-import com.trent.sparker.service.SparkerOptions;
-import com.trent.sparker.utils.DataUtils;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+
+import com.trent.sparker.service.SparkerOptions;
+import com.trent.sparker.utils.DataUtils;
 
 public class AppModuleCommand extends Command {
 
@@ -28,26 +29,27 @@ public class AppModuleCommand extends Command {
 
 		System.out.println("Creating app module... \n");
 		super.run();
+		Files.createDirectories(Paths.get(root.toString(), projectName + ".app", "musl"));
 
-		URL dockerFileLocation = getClass().getClassLoader().getResource("templates/template_dockerfile");
-		if (dockerFileLocation == null) {
+		InputStream templateDockerFileStream = getClass().getClassLoader().getResourceAsStream("templates/template_dockerfile");
+		if (templateDockerFileStream == null) {
 			throw new IOException("Template dockerfile file not found.");
 		}
-		Path yamlFile = new File(dockerFileLocation.getPath()).toPath();
 		Path dockerfile = Paths.get(root.toString(), projectName + ".app", "Dockerfile");
 		Files.createFile(dockerfile);
-		Files.copy(yamlFile, dockerfile, StandardCopyOption.REPLACE_EXISTING);
+		Files.copy(templateDockerFileStream, dockerfile, StandardCopyOption.REPLACE_EXISTING);
 
-		URL muslFileURL = getClass().getClassLoader().getResource("templates/ld-musl-x86_64.path");
-		if (muslFileURL == null) {
+		InputStream muslFileStream = getClass().getClassLoader().getResourceAsStream("templates/ld-musl-x86_64.path");
+		if (muslFileStream == null) {
 			throw new IOException("Musl directory not found.");
 		}
-		Path muslFile = new File(muslFileURL.getFile()).toPath();
-		Files.createDirectories(Paths.get(root.toString(), projectName + ".app", "musl"));
-		Files.copy(muslFile, Paths.get(root.toString(), projectName + ".app", "musl", "ld-musl-x86_64.path"));
+		Files.copy(muslFileStream, Paths.get(root.toString(), projectName + ".app", "musl", "ld-musl-x86_64.path"));
 
 		String rawTemplatePOM = DataUtils.populateTemplateFileWithOptions("app_pom", sparkerOptions);
-		BufferedWriter writer = new BufferedWriter(new FileWriter(root.toString() + "/" + projectName + ".app/pom.xml"));
+		BufferedWriter writer = new BufferedWriter(new FileWriter(root.toString()
+				+ "/"
+				+ projectName
+				+ ".app/pom.xml"));
 		writer.write(rawTemplatePOM);
 		writer.close();
 	}
