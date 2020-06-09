@@ -32,6 +32,7 @@ import org.xmlunit.diff.DifferenceEngine;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -53,7 +54,6 @@ public class SparkerServiceTest {
 	@Before
 	public void setUp() {
 		this.testFolderPath = testFolder.getRoot().toPath();
-		sparkerService.setBasePath(testFolderPath);
 	}
 
 	@Test
@@ -66,8 +66,10 @@ public class SparkerServiceTest {
 
 		assertThatFolderExists("project", "project.app");
 		assertThatFileExists("project", "project.app", "pom.xml");
+		assertThatFolderExists("project", ".git");
 		assertThatFolderExists("project", "project.ui");
 		assertThatFileExists("project", "project.ui", "pom.xml");
+		assertThatFolderDoesNotExist("project", "project.ui", ".git");
 		assertThatFolderExists("project", "project.api");
 		assertThatFileExists("project", "project.api", "pom.xml");
 
@@ -77,7 +79,11 @@ public class SparkerServiceTest {
 		assertGeneratedPomFileIsValid(testFolder + "/project/project.api", "api_pom");
 		assertGeneratedPomFileIsValid(testFolder + "/project/project.ui", "ui_pom");
 
-		System.out.println("Testing build...");
+		assertThatBuildWorksCorrectly(options);
+	}
+
+	private void assertThatBuildWorksCorrectly(SparkerOptions options) throws IOException, InterruptedException {
+		System.out.println("Testing build of generated Project...");
 		ProcessBuilder processBuilder = new ProcessBuilder();
 		processBuilder.redirectErrorStream(true);
 		processBuilder.command("bash",
@@ -200,4 +206,9 @@ public class SparkerServiceTest {
 		assertTrue("The file " + constructedPath + " is not a folder.", constructedPath.toFile().isDirectory());
 	}
 
+	private void assertThatFolderDoesNotExist(String... pathArguments) {
+		Path constructedPath = Paths.get(testFolderPath.toString(), pathArguments);
+		assertFalse("The folder " + constructedPath + " does exist but it should not.",
+				constructedPath.toFile().exists());
+	}
 }

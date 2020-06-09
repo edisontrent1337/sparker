@@ -58,15 +58,16 @@ public class Command {
 		return new ParentModuleCommand(root.toString(), "", sparkerOptions);
 	}
 
+	public static GitCommand createGitCommand(SparkerOptions sparkerOptions) {
+		Path root = getRootFromOptions(sparkerOptions);
+		String projectName = sparkerOptions.getProjectName();
+		System.out.println("Initializing git repository...");
+		return new GitCommand(root.toString(), "rm -rf ./" + projectName + ".ui/.git && git init", sparkerOptions);
+	}
+
 	private static Path getRootFromOptions(SparkerOptions sparkerOptions) {
 		String projectName = sparkerOptions.getProjectName();
 		Path basePath = sparkerOptions.getBasePath();
-		if (projectName == null) {
-			sparkerOptions.setProjectName("MyProject");
-		}
-		if (basePath == null) {
-			sparkerOptions.setBasePath(Paths.get(""));
-		}
 		return Paths.get(sparkerOptions.getBasePath().toString(), sparkerOptions.getProjectName());
 	}
 

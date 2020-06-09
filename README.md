@@ -65,3 +65,15 @@ Navigate into `sparker\target` and use `java -jar sparker-X.X.X-SNAPSHOT.jar` in
 
 After executing the bootstrap command, simply navigate into the folder of the newly created project and type
 ``mvn clean install``. Your project will be built and a new docker image of your project should be created.
+
+### Run integration test
+
+This runs an additional test that compiles and runs `Sparker` from command line.
+
+``mvn clean install -P integration``
+
+### Skip all tests
+
+If you want to build `Sparker` without running tests, simply run
+
+``mvn clean install -DskipTests``

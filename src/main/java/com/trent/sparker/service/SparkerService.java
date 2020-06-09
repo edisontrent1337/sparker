@@ -11,21 +11,22 @@ import org.springframework.stereotype.Service;
 public class SparkerService {
 
 	public void create(SparkerOptions sparkerOptions) {
-		if (sparkerOptions.getProjectName() == null) {
-			sparkerOptions.setProjectName("MyProject");
-		}
-		if (sparkerOptions.getBasePath() == null) {
-			sparkerOptions.setBasePath(Paths.get(""));
-		}
-		if (sparkerOptions.getGroupId() == null) {
 
-		}
 		try {
 			createParentModule(sparkerOptions);
 			createAppModule(sparkerOptions);
 			createAPIModule(sparkerOptions);
 			createUIModule(sparkerOptions);
+			createGitRepository(sparkerOptions);
 
+		} catch (IOException | InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void createGitRepository(SparkerOptions sparkerOptions) {
+		try {
+			Command.createGitCommand(sparkerOptions).run();
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
