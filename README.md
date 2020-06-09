@@ -45,7 +45,7 @@ Navigate into `sparker\target` and use `java -jar sparker-X.X.X-SNAPSHOT.jar` in
 ### Backend Module (app)
 * Automatic generation of `pom.xml`
 * Inclusion of `app` module as a submodule
- * of the Spring container preconfigured to serve as a web server with the front-end code already compiled and ready to be served
+* Creation of a Spring container preconfigured to serve as a web server with the front-end code already compiled and ready to be served
 * Automatic configuration of backend module to use api specified by `api.yaml` file
 * Automatic generation a docker-compose file for deployment
 * Automatic generation of a `fly-way` migration script
