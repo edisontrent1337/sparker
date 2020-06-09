@@ -57,6 +57,4 @@ public class SparkerService {
 		Command.createUIModuleCommand(sparkerOptions).run();
 	}
 
-	public void setBasePath(Path basePath) {
-	}
 }

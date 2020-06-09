@@ -1,11 +1,9 @@
 package com.trent.sparker.service.commands;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,7 +29,8 @@ public class AppModuleCommand extends Command {
 		super.run();
 		Files.createDirectories(Paths.get(root.toString(), projectName + ".app", "musl"));
 
-		InputStream templateDockerFileStream = getClass().getClassLoader().getResourceAsStream("templates/template_dockerfile");
+		InputStream templateDockerFileStream = getClass().getClassLoader()
+				.getResourceAsStream("templates/template_dockerfile");
 		if (templateDockerFileStream == null) {
 			throw new IOException("Template dockerfile file not found.");
 		}

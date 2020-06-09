@@ -1,6 +1,9 @@
 package com.trent.sparker.service.commands;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
@@ -30,6 +33,7 @@ public class Command {
 		String projectName = sparkerOptions.getProjectName();
 		String language = sparkerOptions.getLanguage();
 		Path root = getRootFromOptions(sparkerOptions);
+
 		return new AppModuleCommand(root.toString(),
 				" curl https://start.spring.io/starter.tgz -d dependencies=web,actuator \\\n" +
 						" -d language=" + language +
@@ -37,8 +41,7 @@ public class Command {
 						" -d name=" + sparkerOptions.getProjectName() +
 						" -d groupId=" + sparkerOptions.getGroupId() +
 						" -d artifactId=" + sparkerOptions.getArtifactId() +
-						" -d baseDir=" + projectName + ".app" +
-						" | tar -xzvf -",
+						" -d baseDir=" + projectName + " | tar -xzvf - && mv " + projectName + " " + projectName + ".app",
 				sparkerOptions);
 	}
 

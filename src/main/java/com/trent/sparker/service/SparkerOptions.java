@@ -52,7 +52,9 @@ public class SparkerOptions extends Options {
 		this.projectName = commandLine.getOptionValue("projectName");
 		this.artifactId = commandLine.getOptionValue("artifactId");
 		this.language = commandLine.getOptionValue("language");
-		this.mainClass = commandLine.getOptionValue("mainClass");
+		if (commandLine.getOptionValue("mainClass") != null) {
+			this.mainClass = commandLine.getOptionValue("mainClass");
+		}
 	}
 
 	public SparkerOptions setProjectName(String projectName) {
