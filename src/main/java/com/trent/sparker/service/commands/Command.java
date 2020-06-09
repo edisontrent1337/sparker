@@ -1,13 +1,13 @@
 package com.trent.sparker.service.commands;
 
-import com.trent.sparker.service.SparkerOptions;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import com.trent.sparker.service.SparkerOptions;
 
 public class Command {
 
@@ -23,21 +23,23 @@ public class Command {
 
 	public static HelpCommand createHelpCommand(SparkerOptions sparkerOptions) {
 		Path root = getRootFromOptions(sparkerOptions);
-		return new HelpCommand(root.toString(),"", sparkerOptions);
+		return new HelpCommand(root.toString(), "", sparkerOptions);
 	}
 
 	public static AppModuleCommand createAppModuleCommand(SparkerOptions sparkerOptions) {
 		String projectName = sparkerOptions.getProjectName();
 		String language = sparkerOptions.getLanguage();
 		Path root = getRootFromOptions(sparkerOptions);
-		return new AppModuleCommand(root.toString(), " curl https://start.spring.io/starter.tgz -d dependencies=web,actuator \\\n" +
-				" -d language=" + language +
-				" -d type=maven-project" +
-				" -d name=" + sparkerOptions.getProjectName() +
-				" -d groupId=" + sparkerOptions.getGroupId() +
-				" -d artifactId=" + sparkerOptions.getArtifactId() +
-				" -d baseDir=" + projectName + ".app" +
-				" | tar -xzvf -", sparkerOptions);
+		return new AppModuleCommand(root.toString(),
+				" curl https://start.spring.io/starter.tgz -d dependencies=web,actuator \\\n" +
+						" -d language=" + language +
+						" -d type=maven-project" +
+						" -d name=" + sparkerOptions.getProjectName() +
+						" -d groupId=" + sparkerOptions.getGroupId() +
+						" -d artifactId=" + sparkerOptions.getArtifactId() +
+						" -d baseDir=" + projectName + ".app" +
+						" | tar -xzvf -",
+				sparkerOptions);
 	}
 
 	public static UIModuleCommand createUIModuleCommand(SparkerOptions sparkerOptions) {
@@ -59,8 +61,13 @@ public class Command {
 	private static Path getRootFromOptions(SparkerOptions sparkerOptions) {
 		String projectName = sparkerOptions.getProjectName();
 		Path basePath = sparkerOptions.getBasePath();
-		return Paths.get(basePath.toString(), projectName);
-
+		if (projectName == null) {
+			sparkerOptions.setProjectName("MyProject");
+		}
+		if (basePath == null) {
+			sparkerOptions.setBasePath(Paths.get(""));
+		}
+		return Paths.get(sparkerOptions.getBasePath().toString(), sparkerOptions.getProjectName());
 	}
 
 	public void run() throws IOException, InterruptedException {

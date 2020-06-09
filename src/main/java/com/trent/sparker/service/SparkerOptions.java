@@ -1,15 +1,13 @@
 package com.trent.sparker.service;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 public class SparkerOptions extends Options {
-
 
 	private String projectName;
 	private String groupId;
@@ -21,6 +19,9 @@ public class SparkerOptions extends Options {
 	public SparkerOptions() {
 		this.basePath = Paths.get("").toAbsolutePath();
 		this.language = "java";
+		this.groupId = "group-id";
+		this.artifactId = "artifact-id";
+		this.mainClass = "MyMainClass";
 		createOption("basePath", "The path where the project should be created.");
 		createOption("language", "The language of the project. Can be java or kotlin.");
 		createOption("projectName", "The name of the project.");

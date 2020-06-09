@@ -2,6 +2,7 @@ package com.trent.sparker.service;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import com.trent.sparker.service.commands.Command;
 import org.springframework.stereotype.Service;
@@ -10,9 +11,14 @@ import org.springframework.stereotype.Service;
 public class SparkerService {
 
 	public void create(SparkerOptions sparkerOptions) {
-		Path basePath = sparkerOptions.getBasePath();
-		if (basePath == null) {
-			throw new IllegalStateException("Please specify the base path where the project should be created");
+		if (sparkerOptions.getProjectName() == null) {
+			sparkerOptions.setProjectName("MyProject");
+		}
+		if (sparkerOptions.getBasePath() == null) {
+			sparkerOptions.setBasePath(Paths.get(""));
+		}
+		if (sparkerOptions.getGroupId() == null) {
+
 		}
 		try {
 			createParentModule(sparkerOptions);

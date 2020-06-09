@@ -54,11 +54,11 @@ public class SparkerServiceTest {
 	public void setUp() {
 		this.testFolderPath = testFolder.getRoot().toPath();
 		sparkerService.setBasePath(testFolderPath);
-
 	}
 
 	@Test
 	public void createProjectWorksCorrectly() throws IOException, InterruptedException {
+
 		SparkerOptions options = createSparkOptions();
 		sparkerService.create(options);
 		assertThatFolderExists("project");
@@ -71,10 +71,11 @@ public class SparkerServiceTest {
 		assertThatFolderExists("project", "project.api");
 		assertThatFileExists("project", "project.api", "pom.xml");
 
-		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project", "main_pom");
-		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project/project.app", "app_pom");
-		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project/project.api", "api_pom");
-		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project/project.ui", "ui_pom");
+		String testFolder = testFolderPath.toString();
+		assertGeneratedPomFileIsValid(testFolder + "/project", "main_pom");
+		assertGeneratedPomFileIsValid(testFolder + "/project/project.app", "app_pom");
+		assertGeneratedPomFileIsValid(testFolder + "/project/project.api", "api_pom");
+		assertGeneratedPomFileIsValid(testFolder + "/project/project.ui", "ui_pom");
 
 		System.out.println("Testing build...");
 		ProcessBuilder processBuilder = new ProcessBuilder();
@@ -108,11 +109,21 @@ public class SparkerServiceTest {
 		memoryAppender.start();
 
 		SparkerOptions options = createSparkOptions();
+		final PrintStream standardOutputStream = new PrintStream(System.out);
+		final ByteArrayOutputStream outputStream = redirectOutput();
+		sparkerService.printHelp(options);
+		assertThatHelpIsPrinted(outputStream);
+		System.setOut(standardOutputStream);
+	}
 
+	private ByteArrayOutputStream redirectOutput() {
 		final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 		System.setOut(new PrintStream(outContent));
-		sparkerService.printHelp(options);
-		assertThat(outContent.toString(), is("usage: java -jar sparker-X.X.X-SNAPSHOT.jar\n"
+		return outContent;
+	}
+
+	private void assertThatHelpIsPrinted(ByteArrayOutputStream outputStream) {
+		assertThat(outputStream.toString(), is("usage: java -jar sparker-X.X.X-SNAPSHOT.jar\n"
 				+ "    --artifactId <arg>    The artifact id.\n"
 				+ "    --basePath <arg>      The path where the project should be created.\n"
 				+ "    --groupId <arg>       The group id complying with the maven naming\n"
