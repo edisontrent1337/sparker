@@ -2,7 +2,10 @@ package com.trent.sparker;
 
 import com.trent.sparker.service.SparkerOptions;
 import com.trent.sparker.service.SparkerService;
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -40,9 +43,11 @@ public class SparkerApplication {
 	private static void runAsCLITool(SparkerOptions sparkerOptions) {
 		LOGGER.info("Running Sparker as CLI tool.");
 		SparkerService sparkerService = new SparkerService();
-		LOGGER.info(
-				sparkerOptions.toString()
-		);
-		sparkerService.create(sparkerOptions);
+		if (sparkerOptions.hasOption("help")) {
+			sparkerService.printHelp(sparkerOptions);
+		} else {
+			LOGGER.info(sparkerOptions.toString());
+			sparkerService.create(sparkerOptions);
+		}
 	}
 }

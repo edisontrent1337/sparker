@@ -28,6 +28,7 @@ public class SparkerOptions extends Options {
 		createOption("artifactId", "The artifact id.");
 		createOption("mainClass", "The desired name of the main class.");
 		createOption("runAsServer", "Flag to run this application as a server.");
+		createOption("help", "Shows the help dialog.");
 	}
 
 	private void createOption(String option, String description) {

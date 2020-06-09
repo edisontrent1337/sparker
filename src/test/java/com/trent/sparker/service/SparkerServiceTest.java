@@ -1,12 +1,27 @@
 package com.trent.sparker.service;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import com.trent.sparker.SparkerApplication;
+import com.trent.sparker.service.commands.HelpCommand;
+import com.trent.sparker.support.MemoryLogAppender;
+import javax.xml.transform.Source;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -15,14 +30,9 @@ import org.xmlunit.builder.Input;
 import org.xmlunit.diff.DOMDifferenceEngine;
 import org.xmlunit.diff.DifferenceEngine;
 
-import javax.xml.transform.Source;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
@@ -44,6 +54,7 @@ public class SparkerServiceTest {
 	public void setUp() {
 		this.testFolderPath = testFolder.getRoot().toPath();
 		sparkerService.setBasePath(testFolderPath);
+
 	}
 
 	@Test
@@ -68,7 +79,9 @@ public class SparkerServiceTest {
 		System.out.println("Testing build...");
 		ProcessBuilder processBuilder = new ProcessBuilder();
 		processBuilder.redirectErrorStream(true);
-		processBuilder.command("bash", "-c", "cd " + this.testFolderPath + "/" + options.getProjectName() + "&& " + "mvn clean install");
+		processBuilder.command("bash",
+				"-c",
+				"cd " + this.testFolderPath + "/" + options.getProjectName() + "&& " + "mvn clean install");
 		Process process = processBuilder.start();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
@@ -84,6 +97,33 @@ public class SparkerServiceTest {
 		assertEquals(0, exitVal);
 	}
 
+	@Test
+	public void printHelpWorksCorrectly() {
+
+		Logger logger = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(HelpCommand.class);
+		MemoryLogAppender memoryAppender = new MemoryLogAppender();
+		memoryAppender.setContext((LoggerContext) LoggerFactory.getILoggerFactory());
+		logger.setLevel(Level.DEBUG);
+		logger.addAppender(memoryAppender);
+		memoryAppender.start();
+
+		SparkerOptions options = createSparkOptions();
+
+		final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+		System.setOut(new PrintStream(outContent));
+		sparkerService.printHelp(options);
+		assertThat(outContent.toString(), is("usage: java -jar sparker-X.X.X-SNAPSHOT.jar\n"
+				+ "    --artifactId <arg>    The artifact id.\n"
+				+ "    --basePath <arg>      The path where the project should be created.\n"
+				+ "    --groupId <arg>       The group id complying with the maven naming\n"
+				+ "                          conventions.\n"
+				+ "    --help <arg>          Shows the help dialog.\n"
+				+ "    --language <arg>      The language of the project. Can be java or\n"
+				+ "                          kotlin.\n"
+				+ "    --mainClass <arg>     The desired name of the main class.\n"
+				+ "    --projectName <arg>   The name of the project.\n"
+				+ "    --runAsServer <arg>   Flag to run this application as a server.\n"));
+	}
 
 	@Test
 	public void createParentModuleWorksCorrectly() throws IOException {

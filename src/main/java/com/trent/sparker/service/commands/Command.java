@@ -21,6 +21,11 @@ public class Command {
 		this.sparkerOptions = sparkerOptions;
 	}
 
+	public static HelpCommand createHelpCommand(SparkerOptions sparkerOptions) {
+		Path root = getRootFromOptions(sparkerOptions);
+		return new HelpCommand(root.toString(),"", sparkerOptions);
+	}
+
 	public static AppModuleCommand createAppModuleCommand(SparkerOptions sparkerOptions) {
 		String projectName = sparkerOptions.getProjectName();
 		String language = sparkerOptions.getLanguage();
