@@ -1,8 +1,6 @@
 package com.trent.sparker.service;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import com.trent.sparker.service.commands.Command;
 import org.springframework.stereotype.Service;

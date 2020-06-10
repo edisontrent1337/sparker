@@ -1,9 +1,6 @@
 package com.trent.sparker.service.commands;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
@@ -35,13 +32,13 @@ public class Command {
 		Path root = getRootFromOptions(sparkerOptions);
 
 		return new AppModuleCommand(root.toString(),
-				" curl https://start.spring.io/starter.tgz -d dependencies=web,actuator \\\n" +
+				" curl https://start.spring.io/starter.zip -d dependencies=web,actuator \\\n" +
 						" -d language=" + language +
 						" -d type=maven-project" +
 						" -d name=" + sparkerOptions.getProjectName() +
 						" -d groupId=" + sparkerOptions.getGroupId() +
 						" -d artifactId=" + sparkerOptions.getArtifactId() +
-						" -d baseDir=" + projectName + " | tar -xzvf - && mv " + projectName + " " + projectName + ".app",
+						" -d baseDir=" + projectName + ".app" + " -o temp.zip && unzip temp.zip && rm -f temp.zip",
 				sparkerOptions);
 	}
 
@@ -65,13 +62,17 @@ public class Command {
 		Path root = getRootFromOptions(sparkerOptions);
 		String projectName = sparkerOptions.getProjectName();
 		System.out.println("Initializing git repository...");
-		return new GitCommand(root.toString(), "rm -rf ./" + projectName + ".ui/.git && git init", sparkerOptions);
+		return new GitCommand(root.toString(),
+				"rm -rf ./"
+						+ projectName
+						+ ".ui/.git && git init && git add . && git commit -m 'Initial commit created by Sparker.'",
+				sparkerOptions);
 	}
 
 	private static Path getRootFromOptions(SparkerOptions sparkerOptions) {
 		String projectName = sparkerOptions.getProjectName();
 		Path basePath = sparkerOptions.getBasePath();
-		return Paths.get(sparkerOptions.getBasePath().toString(), sparkerOptions.getProjectName());
+		return Paths.get(basePath.toString(), projectName);
 	}
 
 	public void run() throws IOException, InterruptedException {

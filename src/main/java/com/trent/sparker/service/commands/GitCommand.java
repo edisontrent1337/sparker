@@ -12,6 +12,5 @@ public class GitCommand extends Command {
 	@Override
 	public void run() throws IOException, InterruptedException {
 		super.run();
-
 	}
 }

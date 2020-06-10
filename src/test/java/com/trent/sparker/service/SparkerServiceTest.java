@@ -65,7 +65,9 @@ public class SparkerServiceTest {
 		assertThatFileExists("project", "pom.xml");
 
 		assertThatFolderExists("project", "project.app");
+		assertThatFolderExists("project", "project.app", "src");
 		assertThatFileExists("project", "project.app", "pom.xml");
+		assertThatFileExists("project", "project.app", "mvnw");
 		assertThatFolderExists("project", ".git");
 		assertThatFolderExists("project", "project.ui");
 		assertThatFileExists("project", "project.ui", "pom.xml");
