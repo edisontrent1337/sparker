@@ -1,4 +1,4 @@
-package com.trent.sparker.service.commands;
+package com.trent.sparker.service.commands.api;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import com.trent.sparker.service.SparkerOptions;
+import com.trent.sparker.service.commands.Command;
 import com.trent.sparker.utils.DataUtils;
 
 public class APIModuleCommand extends Command {

@@ -1,14 +1,14 @@
 package com.trent.sparker.utils;
 
-import com.trent.sparker.service.SparkerOptions;
-import org.apache.commons.io.IOUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import com.trent.sparker.service.SparkerOptions;
+import org.apache.commons.io.IOUtils;
 
 public class DataUtils {
 
@@ -23,13 +23,14 @@ public class DataUtils {
 		return IOUtils.toString(is, StandardCharsets.UTF_8);
 	}
 
-	public static String populateTemplateFileWithOptions(String templateFile, SparkerOptions sparkerOptions) throws IOException {
+	public static String populateTemplateFileWithOptions(String templateFile, SparkerOptions sparkerOptions)
+			throws IOException
+	{
 		String rawTemplate = getTemplateXMLAsString(templateFile);
-		String result = rawTemplate.replaceAll("\\{projectName}", sparkerOptions.getProjectName())
+		return rawTemplate.replaceAll("\\{projectName}", sparkerOptions.getProjectName())
 				.replaceAll("\\{groupId}", sparkerOptions.getGroupId())
 				.replaceAll("\\{artifactId}", sparkerOptions.getArtifactId())
 				.replaceAll("\\{mainClass}", sparkerOptions.getMainClass());
-		return result;
 	}
 
 	public static void createFile(Path root, String fileName) throws IOException {

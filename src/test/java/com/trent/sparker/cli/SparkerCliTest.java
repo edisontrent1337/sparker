@@ -3,13 +3,10 @@ package com.trent.sparker.cli;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Path;
 
 import com.trent.sparker.SparkerApplication;
-import org.junit.Before;
-import org.junit.Rule;
+import com.trent.sparker.support.AbstractSparkerTest;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -22,15 +19,14 @@ import static org.hamcrest.core.Is.is;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SparkerApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-public class SparkerCliTest {
+public class SparkerCliTest extends AbstractSparkerTest {
 
-	@Rule
-	public TemporaryFolder testFolder = new TemporaryFolder();
-	private Path testFolderPath;
-
-	@Before
-	public void setUp() {
-		this.testFolderPath = testFolder.getRoot().toPath();
+	@Test
+	public void buildingProjectWithoutAnyArgumentsWorksAsExpected() throws IOException, InterruptedException {
+		System.out.println("Running integration test.");
+		runCommand("java -jar ./target/sparker-0.0.1-SNAPSHOT.jar "
+				+ "--basePath " + this.testFolderPath.toString()
+		);
 	}
 
 	@Test
@@ -41,8 +37,17 @@ public class SparkerCliTest {
 				+ "--artifactId myartifact "
 				+ "--groupId synexion "
 				+ "--mainClass MyMainClass "
+				+ "--flyway "
 				+ "--basePath " + this.testFolderPath.toString()
 		);
+		assertThatFileExists("myproject",
+				"myproject.app",
+				"src",
+				"main",
+				"resources",
+				"db",
+				"migration",
+				"V1__init.sql");
 	}
 
 	private void runCommand(String command) throws IOException, InterruptedException {

@@ -14,7 +14,7 @@ public class SparkerService {
 			createParentModule(sparkerOptions);
 			createAppModule(sparkerOptions);
 			createAPIModule(sparkerOptions);
-			createUIModule(sparkerOptions);
+			//createUIModule(sparkerOptions);
 			createGitRepository(sparkerOptions);
 
 		} catch (IOException | InterruptedException e) {

@@ -8,12 +8,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import com.trent.sparker.service.SparkerOptions;
+import com.trent.sparker.service.commands.api.APIModuleCommand;
+import com.trent.sparker.service.commands.app.AppModuleCommand;
+import com.trent.sparker.service.commands.app.FlyWayCommand;
+import com.trent.sparker.service.commands.web.WebModuleCommand;
 
 public class Command {
 
-	SparkerOptions sparkerOptions;
-	private String commandString;
-	private String executionPath;
+	protected SparkerOptions sparkerOptions;
+	protected String commandString;
+	protected String executionPath;
 
 	public Command(String executionPath, String commandString, SparkerOptions sparkerOptions) {
 		this.executionPath = executionPath;
@@ -42,10 +46,10 @@ public class Command {
 				sparkerOptions);
 	}
 
-	public static UIModuleCommand createUIModuleCommand(SparkerOptions sparkerOptions) {
+	public static WebModuleCommand createUIModuleCommand(SparkerOptions sparkerOptions) {
 		String projectName = sparkerOptions.getProjectName();
 		Path root = getRootFromOptions(sparkerOptions);
-		return new UIModuleCommand(root.toString(), "npx create-react-app " + projectName + ".ui", sparkerOptions);
+		return new WebModuleCommand(root.toString(), "npx create-react-app " + projectName + ".ui", sparkerOptions);
 	}
 
 	public static APIModuleCommand createAPIModuleCommand(SparkerOptions sparkerOptions) {
@@ -56,6 +60,11 @@ public class Command {
 	public static ParentModuleCommand createParentModuleCommand(SparkerOptions sparkerOptions) {
 		Path root = getRootFromOptions(sparkerOptions);
 		return new ParentModuleCommand(root.toString(), "", sparkerOptions);
+	}
+
+	public static Command createFlywayCommand(SparkerOptions sparkerOptions) {
+		Path root = getRootFromOptions(sparkerOptions);
+		return new FlyWayCommand(root.toString(), "", sparkerOptions);
 	}
 
 	public static GitCommand createGitCommand(SparkerOptions sparkerOptions) {

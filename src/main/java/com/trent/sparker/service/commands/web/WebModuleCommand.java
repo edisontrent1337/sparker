@@ -1,7 +1,4 @@
-package com.trent.sparker.service.commands;
-
-import com.trent.sparker.service.SparkerOptions;
-import com.trent.sparker.utils.DataUtils;
+package com.trent.sparker.service.commands.web;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -10,9 +7,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class UIModuleCommand extends Command {
+import com.trent.sparker.service.SparkerOptions;
+import com.trent.sparker.service.commands.Command;
+import com.trent.sparker.utils.DataUtils;
 
-	UIModuleCommand(String executionPath, String commandString, SparkerOptions sparkerOptions) {
+// TODO Rename to WebModule
+public class WebModuleCommand extends Command {
+
+	public WebModuleCommand(String executionPath, String commandString, SparkerOptions sparkerOptions) {
 		super(executionPath, commandString, sparkerOptions);
 	}
 
@@ -22,7 +24,7 @@ public class UIModuleCommand extends Command {
 		Path basePath = sparkerOptions.getBasePath();
 		Path root = Paths.get(basePath.toString(), projectName, projectName + ".ui");
 		Files.createDirectories(root);
-		System.out.println("Creating ui module... \n");
+		System.out.println("Creating web module... \n");
 		super.run();
 		String rawTemplatePOM = DataUtils.populateTemplateFileWithOptions("ui_pom", sparkerOptions);
 		BufferedWriter writer = new BufferedWriter(new FileWriter(root.toString() + "/pom.xml"));

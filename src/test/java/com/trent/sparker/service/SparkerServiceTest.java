@@ -5,7 +5,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import ch.qos.logback.classic.Level;
@@ -13,16 +12,13 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import com.trent.sparker.SparkerApplication;
 import com.trent.sparker.service.commands.HelpCommand;
+import com.trent.sparker.support.AbstractSparkerTest;
 import com.trent.sparker.support.MemoryLogAppender;
 import javax.xml.transform.Source;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -32,56 +28,71 @@ import org.xmlunit.diff.DifferenceEngine;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SparkerApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-public class SparkerServiceTest {
-
-	@Autowired
-	private SparkerService sparkerService;
-
-	@Rule
-	public TemporaryFolder testFolder = new TemporaryFolder();
-	private Path testFolderPath;
-
-	public SparkerServiceTest() {
-	}
-
-	@Before
-	public void setUp() {
-		this.testFolderPath = testFolder.getRoot().toPath();
-	}
+public class SparkerServiceTest extends AbstractSparkerTest {
 
 	@Test
 	public void createProjectWorksCorrectly() throws IOException, InterruptedException {
 
 		SparkerOptions options = createSparkOptions();
 		sparkerService.create(options);
-		assertThatFolderExists("project");
-		assertThatFileExists("project", "pom.xml");
+		String projectName = options.getProjectName();
 
-		assertThatFolderExists("project", "project.app");
-		assertThatFolderExists("project", "project.app", "src");
-		assertThatFileExists("project", "project.app", "pom.xml");
-		assertThatFileExists("project", "project.app", "mvnw");
-		assertThatFolderExists("project", ".git");
-		assertThatFolderExists("project", "project.ui");
-		assertThatFileExists("project", "project.ui", "pom.xml");
-		assertThatFolderDoesNotExist("project", "project.ui", ".git");
-		assertThatFolderExists("project", "project.api");
-		assertThatFileExists("project", "project.api", "pom.xml");
-
+		// Check root folder files
+		assertRootFolderFiles(projectName);
+		// Check app module files
+		assertAppModuleFiles(options);
+		// Check ui module files
+		assertUIModuleFiles(projectName);
+		// Check api module files
+		assertAPIModuleFiles(projectName);
 		String testFolder = testFolderPath.toString();
+
 		assertGeneratedPomFileIsValid(testFolder + "/project", "main_pom");
 		assertGeneratedPomFileIsValid(testFolder + "/project/project.app", "app_pom");
 		assertGeneratedPomFileIsValid(testFolder + "/project/project.api", "api_pom");
 		assertGeneratedPomFileIsValid(testFolder + "/project/project.ui", "ui_pom");
 
 		assertThatBuildWorksCorrectly(options);
+	}
+
+	private void assertRootFolderFiles(String projectName) {
+		assertThatFolderExists(projectName);
+		assertThatFileExists(projectName, "pom.xml");
+		assertThatFolderExists(projectName, ".git");
+	}
+
+	private void assertAPIModuleFiles(String projectName) {
+		assertThatFolderExists(projectName, "project.api");
+		assertThatFileExists(projectName, "project.api", "pom.xml");
+	}
+
+	private void assertAppModuleFiles(SparkerOptions sparkerOptions) {
+		String projectName = sparkerOptions.getProjectName();
+		String appModuleRoot = projectName + "/" + projectName + ".app";
+		assertThatFolderExists(appModuleRoot);
+		assertThatFolderExists(appModuleRoot, "src");
+		assertThatFolderExists(appModuleRoot, "src", "main", "java");
+		assertThatFolderExists(appModuleRoot, "src", "main", "resources");
+		assertThatFileExists(appModuleRoot, "pom.xml");
+		assertThatFileExists(appModuleRoot, "mvnw");
+
+		if (sparkerOptions.hasOption("flyway")) {
+			assertThatFolderExists(appModuleRoot, "src", "main", "resources", "db", "migration");
+			assertThatFileExists(appModuleRoot, "src", "main", "resources", "db", "migration", "V1__init.sql");
+		}
+	}
+
+	private void assertUIModuleFiles(String rootFolder) {
+		assertThatFolderExists(rootFolder, "project.ui");
+		assertThatFileExists(rootFolder, "project.ui", "pom.xml");
+		assertThatFolderDoesNotExist(rootFolder, "project.ui", ".git");
+		assertThatFolderExists(rootFolder, "project.api");
+		assertThatFileExists(rootFolder, "project.api", "pom.xml");
 	}
 
 	private void assertThatBuildWorksCorrectly(SparkerOptions options) throws IOException, InterruptedException {
@@ -134,9 +145,10 @@ public class SparkerServiceTest {
 		assertThat(outputStream.toString(), is("usage: java -jar sparker-X.X.X-SNAPSHOT.jar\n"
 				+ "    --artifactId <arg>    The artifact id.\n"
 				+ "    --basePath <arg>      The path where the project should be created.\n"
+				+ "    --flyway              Generates files for flyway.\n"
 				+ "    --groupId <arg>       The group id complying with the maven naming\n"
 				+ "                          conventions.\n"
-				+ "    --help <arg>          Shows the help dialog.\n"
+				+ "    --help                Shows the help dialog.\n"
 				+ "    --language <arg>      The language of the project. Can be java or\n"
 				+ "                          kotlin.\n"
 				+ "    --mainClass <arg>     The desired name of the main class.\n"
@@ -157,8 +169,7 @@ public class SparkerServiceTest {
 	public void createAppModuleWorksCorrectly() throws IOException, InterruptedException {
 		SparkerOptions options = createSparkOptions();
 		sparkerService.createAppModule(options);
-		assertThatFolderExists("project", "project.app");
-		assertThatFileExists("project", "project.app", "pom.xml");
+		assertAppModuleFiles(options);
 		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project/project.app", "app_pom");
 	}
 
@@ -194,23 +205,8 @@ public class SparkerServiceTest {
 				.setBasePath(testFolderPath)
 				.setProjectName("project")
 				.setGroupId("com.trent.test")
+				.setFlyWay(true)
 				.setArtifactId("project");
 	}
 
-	private void assertThatFileExists(String... pathArguments) {
-		Path constructedPath = Paths.get(testFolderPath.toString(), pathArguments);
-		assertTrue("The file " + constructedPath + " does not exist", constructedPath.toFile().exists());
-	}
-
-	private void assertThatFolderExists(String... pathArguments) {
-		Path constructedPath = Paths.get(testFolderPath.toString(), pathArguments);
-		assertTrue("The folder " + constructedPath + " does not exist", constructedPath.toFile().exists());
-		assertTrue("The file " + constructedPath + " is not a folder.", constructedPath.toFile().isDirectory());
-	}
-
-	private void assertThatFolderDoesNotExist(String... pathArguments) {
-		Path constructedPath = Paths.get(testFolderPath.toString(), pathArguments);
-		assertFalse("The folder " + constructedPath + " does exist but it should not.",
-				constructedPath.toFile().exists());
-	}
 }

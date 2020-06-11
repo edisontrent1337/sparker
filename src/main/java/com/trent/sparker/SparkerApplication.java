@@ -18,10 +18,10 @@ public class SparkerApplication {
 
 	public static void main(String[] args) {
 
-		if (args.length == 0) {
-			LOGGER.error("Please provide options to use Sparker.");
-			System.exit(1);
-		}
+//		if (args.length == 0) {
+//			LOGGER.error("Please provide options to use Sparker.");
+//			System.exit(1);
+//		}
 
 		SparkerOptions options = new SparkerOptions();
 		CommandLineParser parser = new DefaultParser();

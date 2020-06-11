@@ -1,4 +1,4 @@
-package com.trent.sparker.service.commands;
+package com.trent.sparker.service.commands.app;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -10,11 +10,12 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 import com.trent.sparker.service.SparkerOptions;
+import com.trent.sparker.service.commands.Command;
 import com.trent.sparker.utils.DataUtils;
 
 public class AppModuleCommand extends Command {
 
-	AppModuleCommand(String executionPath, String commandString, SparkerOptions sparkerOptions) {
+	public AppModuleCommand(String executionPath, String commandString, SparkerOptions sparkerOptions) {
 		super(executionPath, commandString, sparkerOptions);
 	}
 
@@ -51,5 +52,9 @@ public class AppModuleCommand extends Command {
 				+ ".app/pom.xml"));
 		writer.write(rawTemplatePOM);
 		writer.close();
+
+		if (sparkerOptions.isFlywayEnabled()) {
+			new FlyWayCommand(this.executionPath, this.commandString, this.sparkerOptions).run();
+		}
 	}
 }
