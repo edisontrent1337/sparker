@@ -43,11 +43,11 @@ public class SparkerServiceTest extends AbstractSparkerTest {
 		String projectName = options.getProjectName();
 
 		// Check root folder files
-		assertRootFolderFiles(projectName);
+		assertParentModuleFiles(options);
 		// Check app module files
 		assertAppModuleFiles(options);
 		// Check ui module files
-		assertUIModuleFiles(projectName);
+		assertWebModuleFiles(projectName);
 		// Check api module files
 		assertAPIModuleFiles(projectName);
 		String testFolder = testFolderPath.toString();
@@ -60,9 +60,11 @@ public class SparkerServiceTest extends AbstractSparkerTest {
 		assertThatBuildWorksCorrectly(options);
 	}
 
-	private void assertRootFolderFiles(String projectName) {
+	private void assertParentModuleFiles(SparkerOptions options) {
+		String projectName = options.getProjectName();
 		assertThatFolderExists(projectName);
 		assertThatFileExists(projectName, "pom.xml");
+		assertThatFileExists(projectName, ".gitignore");
 		assertThatFolderExists(projectName, ".git");
 	}
 
@@ -75,10 +77,12 @@ public class SparkerServiceTest extends AbstractSparkerTest {
 		String projectName = sparkerOptions.getProjectName();
 		String appModuleRoot = projectName + "/" + projectName + ".app";
 		assertThatFolderExists(appModuleRoot);
+		assertThatFileExists(appModuleRoot, "musl", "ld-musl-x86_64.path");
 		assertThatFolderExists(appModuleRoot, "src");
 		assertThatFolderExists(appModuleRoot, "src", "main", "java");
 		assertThatFolderExists(appModuleRoot, "src", "main", "resources");
 		assertThatFileExists(appModuleRoot, "pom.xml");
+		assertThatFileExists(appModuleRoot, "Dockerfile");
 		assertThatFileExists(appModuleRoot, "mvnw");
 
 		if (sparkerOptions.hasOption("flyway")) {
@@ -87,7 +91,7 @@ public class SparkerServiceTest extends AbstractSparkerTest {
 		}
 	}
 
-	private void assertUIModuleFiles(String rootFolder) {
+	private void assertWebModuleFiles(String rootFolder) {
 		assertThatFolderExists(rootFolder, "project.ui");
 		assertThatFileExists(rootFolder, "project.ui", "pom.xml");
 		assertThatFolderDoesNotExist(rootFolder, "project.ui", ".git");
@@ -157,11 +161,12 @@ public class SparkerServiceTest extends AbstractSparkerTest {
 	}
 
 	@Test
-	public void createParentModuleWorksCorrectly() throws IOException {
+	public void createParentModuleWorksCorrectly() throws IOException, InterruptedException {
 		SparkerOptions options = createSparkOptions();
 		sparkerService.createParentModule(options);
 		assertThatFolderExists("project");
 		assertThatFileExists("project", "pom.xml");
+		assertParentModuleFiles(options);
 		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project", "main_pom");
 	}
 

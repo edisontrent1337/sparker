@@ -10,7 +10,6 @@ import java.nio.file.Paths;
 import com.trent.sparker.service.SparkerOptions;
 import com.trent.sparker.service.commands.api.APIModuleCommand;
 import com.trent.sparker.service.commands.app.AppModuleCommand;
-import com.trent.sparker.service.commands.app.FlyWayCommand;
 import com.trent.sparker.service.commands.web.WebModuleCommand;
 
 public class Command {
@@ -46,7 +45,7 @@ public class Command {
 				sparkerOptions);
 	}
 
-	public static WebModuleCommand createUIModuleCommand(SparkerOptions sparkerOptions) {
+	public static WebModuleCommand createWebModuleCommand(SparkerOptions sparkerOptions) {
 		String projectName = sparkerOptions.getProjectName();
 		Path root = getRootFromOptions(sparkerOptions);
 		return new WebModuleCommand(root.toString(), "npx create-react-app " + projectName + ".ui", sparkerOptions);
@@ -59,12 +58,7 @@ public class Command {
 
 	public static ParentModuleCommand createParentModuleCommand(SparkerOptions sparkerOptions) {
 		Path root = getRootFromOptions(sparkerOptions);
-		return new ParentModuleCommand(root.toString(), "", sparkerOptions);
-	}
-
-	public static Command createFlywayCommand(SparkerOptions sparkerOptions) {
-		Path root = getRootFromOptions(sparkerOptions);
-		return new FlyWayCommand(root.toString(), "", sparkerOptions);
+		return new ParentModuleCommand(root.toString(), "git init", sparkerOptions);
 	}
 
 	public static GitCommand createGitCommand(SparkerOptions sparkerOptions) {

@@ -39,7 +39,7 @@ public class SparkerService {
 		}
 	}
 
-	void createParentModule(SparkerOptions sparkerOptions) throws IOException {
+	void createParentModule(SparkerOptions sparkerOptions) throws IOException, InterruptedException {
 		Command.createParentModuleCommand(sparkerOptions).run();
 	}
 
@@ -52,7 +52,7 @@ public class SparkerService {
 	}
 
 	void createUIModule(SparkerOptions sparkerOptions) throws IOException, InterruptedException {
-		Command.createUIModuleCommand(sparkerOptions).run();
+		Command.createWebModuleCommand(sparkerOptions).run();
 	}
 
 }
