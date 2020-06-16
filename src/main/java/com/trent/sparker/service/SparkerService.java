@@ -14,7 +14,7 @@ public class SparkerService {
 			createParentModule(sparkerOptions);
 			createAppModule(sparkerOptions);
 			createAPIModule(sparkerOptions);
-			createUIModule(sparkerOptions);
+			createWebModule(sparkerOptions);
 			createGitRepository(sparkerOptions);
 
 		} catch (IOException | InterruptedException e) {
@@ -51,7 +51,7 @@ public class SparkerService {
 		Command.createAPIModuleCommand(sparkerOptions).run();
 	}
 
-	void createUIModule(SparkerOptions sparkerOptions) throws IOException, InterruptedException {
+	void createWebModule(SparkerOptions sparkerOptions) throws IOException, InterruptedException {
 		Command.createWebModuleCommand(sparkerOptions).run();
 	}
 

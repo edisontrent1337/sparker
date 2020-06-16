@@ -22,7 +22,7 @@
 	</properties>
 
 	<modules>
-		<module>project.ui</module>
+		<module>project.web</module>
 		<module>project.api</module>
 		<module>project.app</module>
 	</modules>

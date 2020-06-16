@@ -48,7 +48,7 @@ public class Command {
 	public static WebModuleCommand createWebModuleCommand(SparkerOptions sparkerOptions) {
 		String projectName = sparkerOptions.getProjectName();
 		Path root = getRootFromOptions(sparkerOptions);
-		return new WebModuleCommand(root.toString(), "npx create-react-app " + projectName + ".ui", sparkerOptions);
+		return new WebModuleCommand(root.toString(), "npx create-react-app " + projectName + ".web", sparkerOptions);
 	}
 
 	public static APIModuleCommand createAPIModuleCommand(SparkerOptions sparkerOptions) {
@@ -68,7 +68,7 @@ public class Command {
 		return new GitCommand(root.toString(),
 				"rm -rf ./"
 						+ projectName
-						+ ".ui/.git && git init && git add . && git commit -m 'Initial commit created by Sparker.'",
+						+ ".web/.git && git init && git add . && git commit -m 'Initial commit created by Sparker.'",
 				sparkerOptions);
 	}
 

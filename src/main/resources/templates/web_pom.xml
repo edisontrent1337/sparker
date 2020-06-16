@@ -2,15 +2,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>project.ui</artifactId>
+	<artifactId>{artifactId}.web</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
-	<name>project</name>
-	<description>UI module for project - Created with Sparker</description>
+	<name>{projectName}</name>
+	<description>Web module for {projectName} - Created with Sparker</description>
 
 	<parent>
-		<groupId>com.trent.test</groupId>
-		<artifactId>project</artifactId>
+		<groupId>{groupId}</groupId>
+		<artifactId>{artifactId}</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 
@@ -59,7 +59,7 @@
 						</configuration>
 					</execution>
 					<execution>
-						<id>npm run build (Installing UI application as external component)</id>
+						<id>npm run build (Installing Web application as external component)</id>
 						<goals>
 							<goal>exec</goal>
 						</goals>

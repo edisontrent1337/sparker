@@ -22,11 +22,11 @@ public class WebModuleCommand extends Command {
 	public void run() throws IOException, InterruptedException {
 		String projectName = sparkerOptions.getProjectName();
 		Path basePath = sparkerOptions.getBasePath();
-		Path root = Paths.get(basePath.toString(), projectName, projectName + ".ui");
+		Path root = Paths.get(basePath.toString(), projectName, projectName + ".web");
 		Files.createDirectories(root);
 		System.out.println("Creating web module... \n");
 		super.run();
-		String rawTemplatePOM = DataUtils.populateTemplateFileWithOptions("ui_pom", sparkerOptions);
+		String rawTemplatePOM = DataUtils.populateTemplateFileWithOptions("web_pom", sparkerOptions);
 		BufferedWriter writer = new BufferedWriter(new FileWriter(root.toString() + "/pom.xml"));
 		writer.write(rawTemplatePOM);
 		writer.close();

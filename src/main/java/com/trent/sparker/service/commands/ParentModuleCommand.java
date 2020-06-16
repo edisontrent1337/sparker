@@ -31,7 +31,7 @@ public class ParentModuleCommand extends Command {
 		Path parentModuleFolder = Paths.get(basePath.toString(), projectName);
 		DataUtils.createFile(parentModuleFolder, "pom.xml");
 		String rawTemplatePOM = DataUtils.populateTemplateFileWithOptions("main_pom", sparkerOptions);
-		System.out.println(rawTemplatePOM);
+		LOGGER.info(rawTemplatePOM);
 		BufferedWriter writer = new BufferedWriter(new FileWriter(root.toString() + "/pom.xml"));
 		writer.write(rawTemplatePOM);
 		writer.close();

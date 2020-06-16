@@ -55,7 +55,7 @@ public class SparkerServiceTest extends AbstractSparkerTest {
 		assertGeneratedPomFileIsValid(testFolder + "/project", "main_pom");
 		assertGeneratedPomFileIsValid(testFolder + "/project/project.app", "app_pom");
 		assertGeneratedPomFileIsValid(testFolder + "/project/project.api", "api_pom");
-		assertGeneratedPomFileIsValid(testFolder + "/project/project.ui", "ui_pom");
+		assertGeneratedPomFileIsValid(testFolder + "/project/project.web", "ui_pom");
 
 		assertThatBuildWorksCorrectly(options);
 	}
@@ -92,9 +92,9 @@ public class SparkerServiceTest extends AbstractSparkerTest {
 	}
 
 	private void assertWebModuleFiles(String rootFolder) {
-		assertThatFolderExists(rootFolder, "project.ui");
-		assertThatFileExists(rootFolder, "project.ui", "pom.xml");
-		assertThatFolderDoesNotExist(rootFolder, "project.ui", ".git");
+		assertThatFolderExists(rootFolder, "project.web");
+		assertThatFileExists(rootFolder, "project.web", "pom.xml");
+		assertThatFolderDoesNotExist(rootFolder, "project.web", ".git");
 		assertThatFolderExists(rootFolder, "project.api");
 		assertThatFileExists(rootFolder, "project.api", "pom.xml");
 	}
@@ -188,12 +188,12 @@ public class SparkerServiceTest extends AbstractSparkerTest {
 	}
 
 	@Test
-	public void createUIModuleWorksCorrectly() throws IOException, InterruptedException {
+	public void createWebModuleWorksCorrectly() throws IOException, InterruptedException {
 		SparkerOptions options = createSparkOptions();
-		sparkerService.createUIModule(options);
-		assertThatFolderExists("project", "project.ui");
-		assertThatFileExists("project", "project.ui", "pom.xml");
-		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project/project.ui", "ui_pom");
+		sparkerService.createWebModule(options);
+		assertThatFolderExists("project", "project.web");
+		assertThatFileExists("project", "project.web", "pom.xml");
+		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project/project.web", "web_pom");
 	}
 
 	private void assertGeneratedPomFileIsValid(String generatedPomLocation, String comparisonFile) {
