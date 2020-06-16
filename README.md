@@ -2,7 +2,7 @@
 
 Sparker helps to bootstrap software projects by providing boiler-plate code such as folder structures, pom files and modules.
 Sparker is currently capable of creating project structures centered around the Spring Framework.
-It creates a backend module (app), an api module (api) and a ui module (ui).
+It creates a backend module (app), an api module (api) and a web module (web).
 
 ## Preliminaries
 
@@ -55,10 +55,10 @@ Navigate into `sparker\target` and use `java -jar sparker-X.X.X-SNAPSHOT.jar` in
 * Inclusion of `api` module as a submodule
 * Automatic generation of build scripts necessary to create Java API classes
 
-### UI Module (ui)
+### Web Module (web)
 * Automatic generation of `pom.xml`
 * Automatic generation of a front-end module based on `react` and `create-react-app`
-* Inclusion of `ui` module as a submodule
+* Inclusion of `web` module as a submodule
 * Automatic generation of a `package.json` file including useful scripts like redeployment of compiled javascript into the static directory served by the `Spring` backend
 
 ## Build project
