@@ -36,7 +36,7 @@ public class ParentModuleCommand extends Command {
 		writer.write(rawTemplatePOM);
 		writer.close();
 
-		DataUtils.copyTemplateFileToLocation("/git/template_gitignore",
+		DataUtils.copyTemplateFileToLocation("git/template_gitignore",
 				Paths.get(parentModuleFolder.toString(), ".gitignore"));
 
 	}
