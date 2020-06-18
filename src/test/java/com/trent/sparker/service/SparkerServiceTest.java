@@ -55,7 +55,7 @@ public class SparkerServiceTest extends AbstractSparkerTest {
 		assertGeneratedPomFileIsValid(testFolder + "/project", "main_pom");
 		assertGeneratedPomFileIsValid(testFolder + "/project/project.app", "app_pom");
 		assertGeneratedPomFileIsValid(testFolder + "/project/project.api", "api_pom");
-		assertGeneratedPomFileIsValid(testFolder + "/project/project.web", "ui_pom");
+		assertGeneratedPomFileIsValid(testFolder + "/project/project.web", "web_pom");
 
 		assertThatBuildWorksCorrectly(options);
 	}
