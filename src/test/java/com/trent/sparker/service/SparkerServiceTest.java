@@ -95,8 +95,7 @@ public class SparkerServiceTest extends AbstractSparkerTest {
 		assertThatFolderExists(rootFolder, "project.web");
 		assertThatFileExists(rootFolder, "project.web", "pom.xml");
 		assertThatFolderDoesNotExist(rootFolder, "project.web", ".git");
-		assertThatFolderExists(rootFolder, "project.api");
-		assertThatFileExists(rootFolder, "project.api", "pom.xml");
+		assertThatFileExists(rootFolder, "project.web", "src", "App.tsx");
 	}
 
 	private void assertThatBuildWorksCorrectly(SparkerOptions options) throws IOException, InterruptedException {

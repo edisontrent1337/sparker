@@ -48,7 +48,7 @@ public class Command {
 	public static WebModuleCommand createWebModuleCommand(SparkerOptions sparkerOptions) {
 		String projectName = sparkerOptions.getProjectName();
 		Path root = getRootFromOptions(sparkerOptions);
-		return new WebModuleCommand(root.toString(), "npx create-react-app " + projectName + ".web", sparkerOptions);
+		return new WebModuleCommand(root.toString(), "npx create-react-app " + projectName + ".web --template typescript", sparkerOptions);
 	}
 
 	public static APIModuleCommand createAPIModuleCommand(SparkerOptions sparkerOptions) {
