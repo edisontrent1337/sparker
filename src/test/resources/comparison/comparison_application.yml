@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: project
+  profiles:
+    active: production
+
+  ## Spring DATA SOURCE (DataSourceAutoConfiguration & DataSourceProperties)
+  datasource:
+    url: "jdbc:mysql://localhost:3306/project?useSSL=false&serverTimezone=UTC"
+    username: "root"
+    password: "root"
+    driver-class-name: com.mysql.jdbc.Driver
+
+
+  ## Hibernate Properties
+  # The SQL dialect makes Hibernate generate better SQL for the chosen database
+  jpa:
+    properties:
+      hibernate:
+        dialect: "org.hibernate.dialect.MySQL5Dialect"
+        id:
+          new_generator_mappings: false
+
+    ## Hibernate properties
+    # ddl auto (create, create-drop, validate, update)
+    hibernate:
+      ddl-auto: "validate"
+  servlet:
+    multipart:
+      max-file-size: 500000KB
+      max-request-size: 500000KB
+  flyway:
+    baseline-on-migrate: true
+
+server:
+  port: 8080
+
+configuration:
+  cors:
+    allowedOrigins:
+      - http://localhost:3000

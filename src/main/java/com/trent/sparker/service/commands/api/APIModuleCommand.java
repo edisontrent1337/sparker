@@ -29,7 +29,7 @@ public class APIModuleCommand extends Command {
 		}
 		Files.copy(apiFileStream, Paths.get(root.toString(), "api.yaml"));
 		System.out.println("Creating api module... \n");
-		String rawTemplatePOM = DataUtils.populateTemplateFileWithOptions("api_pom", sparkerOptions);
+		String rawTemplatePOM = DataUtils.populateTemplateFileWithOptions("api_pom.xml", sparkerOptions);
 		super.run();
 		BufferedWriter writer = new BufferedWriter(new FileWriter(root.toString() + "/pom.xml"));
 		writer.write(rawTemplatePOM);

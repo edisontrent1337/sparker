@@ -26,7 +26,7 @@ public class WebModuleCommand extends Command {
 		Files.createDirectories(root);
 		System.out.println("Creating web module... \n");
 		super.run();
-		String rawTemplatePOM = DataUtils.populateTemplateFileWithOptions("web_pom", sparkerOptions);
+		String rawTemplatePOM = DataUtils.populateTemplateFileWithOptions("web_pom.xml", sparkerOptions);
 		BufferedWriter writer = new BufferedWriter(new FileWriter(root.toString() + "/pom.xml"));
 		writer.write(rawTemplatePOM);
 		writer.close();

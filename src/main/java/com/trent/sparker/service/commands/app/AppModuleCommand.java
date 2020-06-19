@@ -30,22 +30,23 @@ public class AppModuleCommand extends Command {
 
 		LOGGER.info("Creating app module... \n");
 		super.run();
-		Files.createDirectories(Paths.get(root.toString(), projectName + ".app", "musl"));
+		String moduleFolderName = projectName + ".app";
+		Files.createDirectories(Paths.get(root.toString(), moduleFolderName, "musl"));
 
-
-		Path targetDockerfile = Paths.get(root.toString(), projectName + ".app", "Dockerfile");
+		Path targetDockerfile = Paths.get(root.toString(), moduleFolderName, "Dockerfile");
 		DataUtils.copyTemplateFileToLocation("template_dockerfile", targetDockerfile);
 
-		Path targetMuslFile = Paths.get(root.toString(), projectName + ".app", "musl", "ld-musl-x86_64.path");
+		Path targetMuslFile = Paths.get(root.toString(), moduleFolderName, "musl", "ld-musl-x86_64.path");
 		DataUtils.copyTemplateFileToLocation("ld-musl-x86_64.path", targetMuslFile);
 
-		String rawTemplatePOM = DataUtils.populateTemplateFileWithOptions("app_pom", sparkerOptions);
-		BufferedWriter writer = new BufferedWriter(new FileWriter(root.toString()
-				+ "/"
-				+ projectName
-				+ ".app/pom.xml"));
-		writer.write(rawTemplatePOM);
-		writer.close();
+		String rawTemplatePOM = DataUtils.populateTemplateFileWithOptions("app_pom.xml", sparkerOptions);
+		String pomFileName = root.toString() + "/" + moduleFolderName + "/pom.xml";
+		DataUtils.writeStringToFile(rawTemplatePOM, pomFileName);
+
+		String rawTemplateApplicationYAML = DataUtils.populateTemplateFileWithOptions("template_application.yml",
+				sparkerOptions);
+		String applicationYAMLFileName = root.toString() + "/" + moduleFolderName + "/src/main/resources/application.yml";
+		DataUtils.writeStringToFile(rawTemplateApplicationYAML, applicationYAMLFileName);
 
 		if (sparkerOptions.isFlywayEnabled()) {
 			new FlyWayCommand(this.executionPath, this.commandString, this.sparkerOptions).run();

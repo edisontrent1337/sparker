@@ -1,5 +1,9 @@
 package com.trent.sparker.utils;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -17,11 +21,18 @@ public class DataUtils {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataUtils.class);
 
-	public static String getTemplateXMLAsString(String fileName) throws IOException {
-		if (!fileName.endsWith(".xml")) {
-			fileName += ".xml";
-		}
-		InputStream is = DataUtils.class.getClassLoader().getResourceAsStream("templates/" + fileName);
+	public static String readTemplateFileAsString(String fileName) throws IOException {
+		return readResourceFileAsString("templates/" + fileName);
+	}
+
+	public static String readFileAsString(String fileName) throws IOException {
+		File file = new File(fileName);
+		InputStream is = new FileInputStream(file);
+		return IOUtils.toString(is, StandardCharsets.UTF_8);
+	}
+
+	public static String readResourceFileAsString(String fileName) throws IOException {
+		InputStream is = DataUtils.class.getClassLoader().getResourceAsStream(fileName);
 		if (is == null) {
 			throw new IOException("File " + fileName + " was not found");
 		}
@@ -31,10 +42,12 @@ public class DataUtils {
 	public static String populateTemplateFileWithOptions(String templateFile, SparkerOptions sparkerOptions)
 			throws IOException
 	{
-		String rawTemplate = getTemplateXMLAsString(templateFile);
+		String rawTemplate = readTemplateFileAsString(templateFile);
+		String databaseName = sparkerOptions.getArtifactId().replaceAll("-", "_").toLowerCase();
 		return rawTemplate.replaceAll("\\{projectName}", sparkerOptions.getProjectName())
 				.replaceAll("\\{groupId}", sparkerOptions.getGroupId())
 				.replaceAll("\\{artifactId}", sparkerOptions.getArtifactId())
+				.replaceAll("\\{databaseName}", databaseName)
 				.replaceAll("\\{mainClass}", sparkerOptions.getMainClass());
 	}
 
@@ -57,4 +70,9 @@ public class DataUtils {
 		Files.copy(templateFileStream, targetLocation, StandardCopyOption.REPLACE_EXISTING);
 	}
 
+	public static void writeStringToFile(String content, String fileName) throws IOException {
+		BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+		writer.write(content);
+		writer.close();
+	}
 }

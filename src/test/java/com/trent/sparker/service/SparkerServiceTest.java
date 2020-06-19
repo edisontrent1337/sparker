@@ -14,6 +14,7 @@ import com.trent.sparker.SparkerApplication;
 import com.trent.sparker.service.commands.HelpCommand;
 import com.trent.sparker.support.AbstractSparkerTest;
 import com.trent.sparker.support.MemoryLogAppender;
+import com.trent.sparker.utils.DataUtils;
 import javax.xml.transform.Source;
 import org.junit.Assert;
 import org.junit.Test;
@@ -81,6 +82,7 @@ public class SparkerServiceTest extends AbstractSparkerTest {
 		assertThatFolderExists(appModuleRoot, "src");
 		assertThatFolderExists(appModuleRoot, "src", "main", "java");
 		assertThatFolderExists(appModuleRoot, "src", "main", "resources");
+		assertThatFileExists(appModuleRoot, "src", "main", "resources", "application.yml");
 		assertThatFileExists(appModuleRoot, "pom.xml");
 		assertThatFileExists(appModuleRoot, "Dockerfile");
 		assertThatFileExists(appModuleRoot, "mvnw");
@@ -175,6 +177,8 @@ public class SparkerServiceTest extends AbstractSparkerTest {
 		sparkerService.createAppModule(options);
 		assertAppModuleFiles(options);
 		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project/project.app", "app_pom");
+		assertThatFileContentsAreEqual(testFolderPath.toString()
+				+ "/project/project.app/src/main/resources/application.yml", "src/test/resources/comparison/comparison_application.yml");
 	}
 
 	@Test
@@ -202,6 +206,14 @@ public class SparkerServiceTest extends AbstractSparkerTest {
 		Source control = Input.fromFile("src/test/resources/comparison/" + comparisonFile + ".xml").build();
 		diff.addDifferenceListener((comparison, outcome) -> Assert.fail("found a difference: " + comparison));
 		diff.compare(control, generated);
+	}
+
+	private void assertThatFileContentsAreEqual(String generatedFileLocation, String comparisonFileName)
+			throws IOException
+	{
+		String comparisonYAML = DataUtils.readFileAsString(comparisonFileName);
+		String generatedYAML = DataUtils.readFileAsString(generatedFileLocation);
+		assertEquals(generatedYAML, comparisonYAML);
 	}
 
 	private SparkerOptions createSparkOptions() {
