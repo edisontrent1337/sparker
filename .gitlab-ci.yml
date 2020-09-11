@@ -4,6 +4,7 @@ build:
   stage: build
   before_script:
     - npm install -g npx
+    - npm install -g create-react-app
   script:
     - mvn clean install
   only:
