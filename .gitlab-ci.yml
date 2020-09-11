@@ -7,6 +7,7 @@ build:
     - apk add openjdk11 
     - apk add bash
     - apk add git
+    - apk add curl
     - npm install -g create-react-app
   script:
     - mvn clean install
