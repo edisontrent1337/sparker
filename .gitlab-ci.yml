@@ -3,7 +3,7 @@ image: cschockaert/docker-npm-maven:latest
 build:
   stage: build
   script:
-    - mvn clean install
+    - mvn clean install -DskipTests
   only:
     - master
 
