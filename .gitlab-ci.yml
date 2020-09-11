@@ -1,4 +1,4 @@
-image: cschockaert/docker-npm-maven:latest
+image: npm:14.10.1-stretch
 
 build:
   stage: build
