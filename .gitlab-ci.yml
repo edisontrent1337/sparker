@@ -4,6 +4,7 @@ build:
   stage: build
   before_script:
     - apk add maven
+    - apk add openjdk11 
     - npm install -g create-react-app
   script:
     - mvn clean install
