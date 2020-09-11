@@ -2,8 +2,10 @@ image: cschockaert/docker-npm-maven:latest
 
 build:
   stage: build
+  before_script:
+    - npm install -g npx
   script:
-    - mvn clean install -DskipTests
+    - mvn clean install
   only:
     - master
 
