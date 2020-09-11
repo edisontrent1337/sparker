@@ -3,7 +3,7 @@ image: node:14.10.1-alpine
 build:
   stage: build
   before_script:
-    - apk add mvn
+    - apk add maven
     - npm install -g create-react-app
   script:
     - mvn clean install
