@@ -5,6 +5,8 @@ build:
   before_script:
     - apk add maven
     - apk add openjdk11 
+    - apk add bash
+    - apk add git
     - npm install -g create-react-app
   script:
     - mvn clean install
