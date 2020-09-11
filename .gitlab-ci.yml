@@ -1,8 +1,9 @@
-image: npm:14.10.1-stretch
+image: node:14.10.1-apline
 
 build:
   stage: build
   before_script:
+    - apk add mvn
     - npm install -g create-react-app
   script:
     - mvn clean install
