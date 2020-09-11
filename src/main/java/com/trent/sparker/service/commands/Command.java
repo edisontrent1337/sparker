@@ -84,6 +84,7 @@ public class Command {
 		Path root = Paths.get(basePath.toString(), projectName);
 		Files.createDirectories(root);
 		ProcessBuilder processBuilder = new ProcessBuilder();
+		processBuilder.redirectErrorStream(true);
 		processBuilder.command("bash", "-c", "cd " + this.executionPath + "&& " + commandString);
 		StringBuilder output = new StringBuilder();
 		Process process = processBuilder.start();
@@ -98,7 +99,11 @@ public class Command {
 		int exitVal = process.waitFor();
 		if (exitVal == 0) {
 			System.out.println("Success!");
-			System.out.println(output);
+
 		}
+		else {
+			System.out.println("Failed to create web module.");
+		}
+		System.out.println(output);
 	}
 }
