@@ -1,12 +1,5 @@
 package com.trent.sparker.service;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintStream;
-import java.nio.file.Paths;
-
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
@@ -15,31 +8,34 @@ import com.trent.sparker.service.commands.HelpCommand;
 import com.trent.sparker.support.AbstractSparkerTest;
 import com.trent.sparker.support.MemoryLogAppender;
 import com.trent.sparker.utils.DataUtils;
-import javax.xml.transform.Source;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.builder.Input;
-import org.xmlunit.diff.DOMDifferenceEngine;
-import org.xmlunit.diff.DifferenceEngine;
+import org.xmlunit.diff.Diff;
+
+import javax.xml.transform.Source;
+import java.io.*;
+import java.nio.file.Paths;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = SparkerApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 public class SparkerServiceTest extends AbstractSparkerTest {
 
+	private static final Logger LOGGER = (Logger) LoggerFactory.getLogger(SparkerServiceTest.class);
+
 	@Test
 	public void createProjectWorksCorrectly() throws IOException, InterruptedException {
 
-		SparkerOptions options = createSparkOptions();
+		SparkerOptions options = createSparkerOptions();
 		sparkerService.create(options);
 		String projectName = options.getProjectName();
 
@@ -132,7 +128,7 @@ public class SparkerServiceTest extends AbstractSparkerTest {
 		logger.addAppender(memoryAppender);
 		memoryAppender.start();
 
-		SparkerOptions options = createSparkOptions();
+		SparkerOptions options = createSparkerOptions();
 		final PrintStream standardOutputStream = new PrintStream(System.out);
 		final ByteArrayOutputStream outputStream = redirectOutput();
 		sparkerService.printHelp(options);
@@ -147,7 +143,7 @@ public class SparkerServiceTest extends AbstractSparkerTest {
 	}
 
 	private void assertThatHelpIsPrinted(ByteArrayOutputStream outputStream) {
-		assertThat(outputStream.toString(), is("usage: java -jar sparker-X.X.X-SNAPSHOT.jar\n"
+		assertThat(outputStream.toString(), is("\nusage: java -jar sparker-X.X.X-SNAPSHOT.jar\n"
 				+ "    --artifactId <arg>    The artifact id.\n"
 				+ "    --basePath <arg>      The path where the project should be created.\n"
 				+ "    --flyway              Generates files for flyway.\n"
@@ -163,7 +159,7 @@ public class SparkerServiceTest extends AbstractSparkerTest {
 
 	@Test
 	public void createParentModuleWorksCorrectly() throws IOException, InterruptedException {
-		SparkerOptions options = createSparkOptions();
+		SparkerOptions options = createSparkerOptions();
 		sparkerService.createParentModule(options);
 		assertThatFolderExists("project");
 		assertThatFileExists("project", "pom.xml");
@@ -173,7 +169,7 @@ public class SparkerServiceTest extends AbstractSparkerTest {
 
 	@Test
 	public void createAppModuleWorksCorrectly() throws IOException, InterruptedException {
-		SparkerOptions options = createSparkOptions();
+		SparkerOptions options = createSparkerOptions();
 		sparkerService.createAppModule(options);
 		assertAppModuleFiles(options);
 		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project/project.app", "app_pom");
@@ -183,7 +179,7 @@ public class SparkerServiceTest extends AbstractSparkerTest {
 
 	@Test
 	public void createAPIModuleWorksCorrectly() throws IOException, InterruptedException {
-		SparkerOptions options = createSparkOptions();
+		SparkerOptions options = createSparkerOptions();
 		sparkerService.createAPIModule(options);
 		assertThatFolderExists("project", "project.api");
 		assertThatFileExists("project", "project.api", "pom.xml");
@@ -192,7 +188,7 @@ public class SparkerServiceTest extends AbstractSparkerTest {
 
 	@Test
 	public void createWebModuleWorksCorrectly() throws IOException, InterruptedException {
-		SparkerOptions options = createSparkOptions();
+		SparkerOptions options = createSparkerOptions();
 		sparkerService.createWebModule(options);
 		assertThatFolderExists("project", "project.web");
 		assertThatFileExists("project", "project.web", "pom.xml");
@@ -200,23 +196,24 @@ public class SparkerServiceTest extends AbstractSparkerTest {
 	}
 
 	private void assertGeneratedPomFileIsValid(String generatedPomLocation, String comparisonFile) {
-		DifferenceEngine diff = new DOMDifferenceEngine();
-
 		Source generated = Input.fromFile(Paths.get(generatedPomLocation, "pom.xml").toFile()).build();
 		Source control = Input.fromFile("src/test/resources/comparison/" + comparisonFile + ".xml").build();
-		diff.addDifferenceListener((comparison, outcome) -> Assert.fail("found a difference: " + comparison));
-		diff.compare(control, generated);
+		Diff diffBuilder = DiffBuilder.compare(generated)
+				.withTest(control)
+				.ignoreWhitespace()
+				.withDifferenceListeners()
+				.build();
+		assertFalse(diffBuilder.toString(), diffBuilder.hasDifferences());
 	}
 
 	private void assertThatFileContentsAreEqual(String generatedFileLocation, String comparisonFileName)
-			throws IOException
-	{
+			throws IOException {
 		String comparisonYAML = DataUtils.readFileAsString(comparisonFileName);
 		String generatedYAML = DataUtils.readFileAsString(generatedFileLocation);
 		assertEquals(generatedYAML, comparisonYAML);
 	}
 
-	private SparkerOptions createSparkOptions() {
+	private SparkerOptions createSparkerOptions() {
 		return new SparkerOptions()
 				.setBasePath(testFolderPath)
 				.setProjectName("project")

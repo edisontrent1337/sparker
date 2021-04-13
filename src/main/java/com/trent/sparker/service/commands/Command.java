@@ -1,6 +1,7 @@
 package com.trent.sparker.service.commands;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
@@ -85,25 +86,24 @@ public class Command {
 		Files.createDirectories(root);
 		ProcessBuilder processBuilder = new ProcessBuilder();
 		processBuilder.redirectErrorStream(true);
-		processBuilder.command("bash", "-c", "cd " + this.executionPath + "&& " + commandString);
+		processBuilder.directory(new File(this.executionPath));
+		processBuilder.command("bash", "-c", commandString);
 		StringBuilder output = new StringBuilder();
 		Process process = processBuilder.start();
 		BufferedReader reader = new BufferedReader(
 				new InputStreamReader(process.getInputStream()));
 
 		String line;
-		while ((line = reader.readLine()) != null) {
-			output.append(line).append("\n");
+		while ((line = reader.readLine()) != null &! "".equals(line)) {
+			output.append(line)
+					.append("\n");
 		}
 
 		int exitVal = process.waitFor();
-		if (exitVal == 0) {
-			System.out.println("Success!");
-
-		}
-		else {
-			System.out.println("Failed to create web module.");
+		if (exitVal != 0) {
+			System.err.printf("Error: Command exited with non-zero exit code: %s%n", exitVal);
 		}
 		System.out.println(output);
 	}
+
 }

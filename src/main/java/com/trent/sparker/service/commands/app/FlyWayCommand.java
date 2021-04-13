@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 
 import com.trent.sparker.service.SparkerOptions;
 import com.trent.sparker.service.commands.Command;
+import org.hibernate.validator.internal.util.logging.LoggerFactory;
 
 public class FlyWayCommand extends Command {
 
