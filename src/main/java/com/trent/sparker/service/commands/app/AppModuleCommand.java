@@ -1,17 +1,16 @@
 package com.trent.sparker.service.commands.app;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import com.trent.sparker.service.SparkerOptions;
 import com.trent.sparker.service.commands.Command;
 import com.trent.sparker.utils.DataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class AppModuleCommand extends Command {
 
@@ -46,6 +45,9 @@ public class AppModuleCommand extends Command {
 		String rawTemplateApplicationYAML = DataUtils.populateTemplateFileWithOptions("template_application.yml",
 				sparkerOptions);
 		String applicationYAMLFileName = root.toString() + "/" + moduleFolderName + "/src/main/resources/application.yml";
+		File applicationPropertiesFile = new File(applicationYAMLFileName);
+		applicationPropertiesFile.getParentFile().mkdirs();
+		applicationPropertiesFile.createNewFile();
 		DataUtils.writeStringToFile(rawTemplateApplicationYAML, applicationYAMLFileName);
 
 		if (sparkerOptions.isFlywayEnabled()) {

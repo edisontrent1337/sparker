@@ -2,7 +2,6 @@ package com.trent.sparker.service;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
@@ -22,6 +21,9 @@ public class SparkerOptions extends Options {
 	private String mainClass;
 	private boolean isFlywayEnabled;
 
+	private boolean shouldSkipApiModule;
+	private boolean shouldSkipWebModule;
+
 	public SparkerOptions() {
 		this.basePath = Paths.get("").toAbsolutePath();
 		this.language = "java";
@@ -38,6 +40,8 @@ public class SparkerOptions extends Options {
 		createOption("runAsServer", true, "Flag to run this application as a server.");
 		createOption("help", false, "Shows the help dialog.");
 		createOption("flyway", false, "Generates files for flyway.");
+		createOption("no_api", false, "Skips creation of an api module.");
+		createOption("no_web", false, "Skips creation of a web module.");
 	}
 
 	private void createOption(String option, boolean hasArg, String description) {
@@ -62,6 +66,8 @@ public class SparkerOptions extends Options {
 		this.language = setOptionFromCommandLine("language", commandLine, "java");
 		this.isFlywayEnabled = commandLine.hasOption("--flyway");
 		this.mainClass = setOptionFromCommandLine("mainClass", commandLine, "MyMainClass");
+		this.shouldSkipApiModule = commandLine.hasOption("--no_api");
+		this.shouldSkipWebModule = commandLine.hasOption("--no_web");
 	}
 
 	private String setOptionFromCommandLine(String option, CommandLine commandLine, String defaultValue) {
@@ -124,5 +130,21 @@ public class SparkerOptions extends Options {
 
 	public boolean isFlywayEnabled() {
 		return isFlywayEnabled;
+	}
+
+	public boolean shouldSkipApiModule() {
+		return shouldSkipApiModule;
+	}
+
+	public void setShouldSkipApiModule(boolean shouldSkipApiModule) {
+		this.shouldSkipApiModule = shouldSkipApiModule;
+	}
+
+	public boolean shouldSkipWebModule() {
+		return shouldSkipWebModule;
+	}
+
+	public void setShouldSkipWebModule(boolean shouldSkipWebModule) {
+		this.shouldSkipWebModule = shouldSkipWebModule;
 	}
 }

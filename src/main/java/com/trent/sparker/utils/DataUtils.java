@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.regex.Pattern;
 
 import com.trent.sparker.service.SparkerOptions;
 import org.apache.commons.io.IOUtils;
@@ -40,10 +41,21 @@ public class DataUtils {
 	}
 
 	public static String populateTemplateFileWithOptions(String templateFile, SparkerOptions sparkerOptions)
-			throws IOException
-	{
+			throws IOException {
 		String rawTemplate = readTemplateFileAsString(templateFile);
 		String databaseName = sparkerOptions.getArtifactId().replaceAll("-", "_").toLowerCase();
+		if (sparkerOptions.shouldSkipWebModule()) {
+			rawTemplate = rawTemplate.replaceAll("<module>\\{projectName}.web</module>", "");
+		}
+		if (sparkerOptions.shouldSkipApiModule()) {
+			rawTemplate = rawTemplate.replaceAll("<module>\\{projectName}.api</module>", "")
+					.replaceAll(Pattern.quote("\t\t\t<!-- API sub module dependency -->\n" +
+							"\t\t\t<dependency>\n" +
+							"\t\t\t\t<groupId>{groupId}</groupId>\n" +
+							"\t\t\t\t<artifactId>{artifactId}.api</artifactId>\n" +
+							"\t\t\t\t<version>${project.version}</version>\n" +
+							"\t\t\t</dependency>"), "");
+		}
 		return rawTemplate.replaceAll("\\{projectName}", sparkerOptions.getProjectName())
 				.replaceAll("\\{groupId}", sparkerOptions.getGroupId())
 				.replaceAll("\\{artifactId}", sparkerOptions.getArtifactId())

@@ -30,8 +30,7 @@ public class SparkerService {
 		}
 	}
 
-	public void printHelp(SparkerOptions sparkerOptions)
-	{
+	public void printHelp(SparkerOptions sparkerOptions) {
 		try {
 			Command.createHelpCommand(sparkerOptions).run();
 		} catch (IOException | InterruptedException e) {
@@ -48,11 +47,15 @@ public class SparkerService {
 	}
 
 	void createAPIModule(SparkerOptions sparkerOptions) throws IOException, InterruptedException {
-		Command.createAPIModuleCommand(sparkerOptions).run();
+		if (!sparkerOptions.shouldSkipApiModule()) {
+			Command.createAPIModuleCommand(sparkerOptions).run();
+		}
 	}
 
 	void createWebModule(SparkerOptions sparkerOptions) throws IOException, InterruptedException {
-		Command.createWebModuleCommand(sparkerOptions).run();
+		if (!sparkerOptions.shouldSkipWebModule()) {
+			Command.createWebModuleCommand(sparkerOptions).run();
+		}
 	}
 
 }

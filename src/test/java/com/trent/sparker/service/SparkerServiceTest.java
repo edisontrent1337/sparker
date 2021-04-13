@@ -8,6 +8,7 @@ import com.trent.sparker.service.commands.HelpCommand;
 import com.trent.sparker.support.AbstractSparkerTest;
 import com.trent.sparker.support.MemoryLogAppender;
 import com.trent.sparker.utils.DataUtils;
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.LoggerFactory;
@@ -143,18 +144,21 @@ public class SparkerServiceTest extends AbstractSparkerTest {
 	}
 
 	private void assertThatHelpIsPrinted(ByteArrayOutputStream outputStream) {
-		assertThat(outputStream.toString(), is("\nusage: java -jar sparker-X.X.X-SNAPSHOT.jar\n"
-				+ "    --artifactId <arg>    The artifact id.\n"
-				+ "    --basePath <arg>      The path where the project should be created.\n"
-				+ "    --flyway              Generates files for flyway.\n"
-				+ "    --groupId <arg>       The group id complying with the maven naming\n"
-				+ "                          conventions.\n"
-				+ "    --help                Shows the help dialog.\n"
-				+ "    --language <arg>      The language of the project. Can be java or\n"
-				+ "                          kotlin.\n"
-				+ "    --mainClass <arg>     The desired name of the main class.\n"
-				+ "    --projectName <arg>   The name of the project.\n"
-				+ "    --runAsServer <arg>   Flag to run this application as a server.\n"));
+		assertThat(outputStream.toString(), is("\n" +
+				"usage: java -jar sparker-X.X.X-SNAPSHOT.jar\n" +
+				"    --artifactId <arg>    The artifact id.\n" +
+				"    --basePath <arg>      The path where the project should be created.\n" +
+				"    --flyway              Generates files for flyway.\n" +
+				"    --groupId <arg>       The group id complying with the maven naming\n" +
+				"                          conventions.\n" +
+				"    --help                Shows the help dialog.\n" +
+				"    --language <arg>      The language of the project. Can be java or\n" +
+				"                          kotlin.\n" +
+				"    --mainClass <arg>     The desired name of the main class.\n" +
+				"    --no_api              Skips creation of an api module.\n" +
+				"    --no_web              Skips creation of a web module.\n" +
+				"    --projectName <arg>   The name of the project.\n" +
+				"    --runAsServer <arg>   Flag to run this application as a server.\n"));
 	}
 
 	@Test
@@ -193,6 +197,34 @@ public class SparkerServiceTest extends AbstractSparkerTest {
 		assertThatFolderExists("project", "project.web");
 		assertThatFileExists("project", "project.web", "pom.xml");
 		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project/project.web", "web_pom");
+	}
+
+	@Test
+	public void skipModulesWorksCorrectly() {
+		SparkerOptions options = createSparkerOptions();
+		options.setShouldSkipWebModule(true);
+
+		sparkerService.create(options);
+		assertThatFolderDoesNotExist("project", "project.web");
+		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project", "main_pom_no_web");
+
+		cleanTestFolder();
+
+		options.setShouldSkipApiModule(true);
+		sparkerService.create(options);
+		assertThatFolderDoesNotExist("project", "project.web");
+		assertThatFolderDoesNotExist("project", "project.api");
+		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project", "main_pom_no_web_no_api");
+
+
+	}
+
+	private void cleanTestFolder() {
+		try {
+			FileUtils.cleanDirectory(testFolderPath.toFile());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void assertGeneratedPomFileIsValid(String generatedPomLocation, String comparisonFile) {
