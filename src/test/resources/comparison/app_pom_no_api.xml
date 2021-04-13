@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<!-- Name of application and docker container -->
-	<name>{projectName}</name>
-	<description>{projectName} - Initialized with Sparker.</description>
+	<name>project</name>
+	<description>project - Initialized with Sparker.</description>
 
 	<parent>
-		<groupId>{groupId}</groupId>
-		<artifactId>{artifactId}</artifactId>
+		<groupId>com.trent.test</groupId>
+		<artifactId>project</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>{artifactId}.app</artifactId>
+	<artifactId>project.app</artifactId>
 	<packaging>jar</packaging>
 
 	<dependencies>
@@ -86,11 +86,6 @@
 			<scope>compile</scope>
 		</dependency>
 
-		<!-- API module as test dependency -->
-		<dependency>
-			<groupId>{groupId}</groupId>
-			<artifactId>{artifactId}.api</artifactId>
-		</dependency>
 	</dependencies>
 
 	<build>
@@ -137,7 +132,7 @@
 						<manifest>
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>lib/</classpathPrefix>
-							<mainClass>{groupId}.{mainClass}</mainClass>
+							<mainClass>com.trent.test.ProjectApplication</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

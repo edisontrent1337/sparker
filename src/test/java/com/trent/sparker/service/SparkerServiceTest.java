@@ -215,8 +215,7 @@ public class SparkerServiceTest extends AbstractSparkerTest {
 		assertThatFolderDoesNotExist("project", "project.web");
 		assertThatFolderDoesNotExist("project", "project.api");
 		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project", "main_pom_no_web_no_api");
-
-
+		assertGeneratedPomFileIsValid(testFolderPath.toString() + "/project/project.app", "app_pom_no_api");
 	}
 
 	private void cleanTestFolder() {

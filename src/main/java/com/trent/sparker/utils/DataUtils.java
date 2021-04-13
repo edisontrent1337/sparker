@@ -54,7 +54,12 @@ public class DataUtils {
 							"\t\t\t\t<groupId>{groupId}</groupId>\n" +
 							"\t\t\t\t<artifactId>{artifactId}.api</artifactId>\n" +
 							"\t\t\t\t<version>${project.version}</version>\n" +
-							"\t\t\t</dependency>"), "");
+							"\t\t\t</dependency>"), "")
+					.replaceAll(Pattern.quote("\t\t<!-- API module as test dependency -->\n" +
+							"\t\t<dependency>\n" +
+							"\t\t\t<groupId>{groupId}</groupId>\n" +
+							"\t\t\t<artifactId>{artifactId}.api</artifactId>\n" +
+							"\t\t</dependency>"), "");
 		}
 		return rawTemplate.replaceAll("\\{projectName}", sparkerOptions.getProjectName())
 				.replaceAll("\\{groupId}", sparkerOptions.getGroupId())

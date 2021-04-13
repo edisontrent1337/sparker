@@ -30,9 +30,11 @@ Navigate into `sparker\target` and use `java -jar sparker-X.X.X-SNAPSHOT.jar` in
 | --groupId           | The group id complying with the maven naming conventions.  |
 | --help              | Shows the help dialog.                                     |
 | --language          | The language of the backend module. Can be java or kotlin. |
-| --mainClass         | The desirec name of the main class of the backend module.  |
+| --mainClass         | The desired name of the main class of the backend module.  |
 | --projectName       | The name of the project.                                   |
 | --runAsServer       | Flag to run this application as a server.                  |
+| --no_api            | Generation of api module is skipped.                       |
+| --no_web            | Generation of web module is skipped.                       |
 
 
 ## Features
